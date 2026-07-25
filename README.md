@@ -7,13 +7,10 @@ IOT adalah aplikasi pelacak keuangan pribadi berbahasa Indonesia untuk mencatat 
 - Pencatatan transaksi cepat dari bahasa sehari-hari.
 - Akun tunai, debit, QRIS, dan kartu kredit.
 - Anggaran, target dana, split bill, filter, dan riwayat transaksi.
-- Pengingat transaksi bulanan yang selalu memerlukan konfirmasi sebelum dicatat.
 - Dark mode sebagai tampilan awal dengan mode terang opsional.
 - Ekspor/impor backup JSON dan validasi data impor.
 
 ## Riwayat versi
-
-- **v1.12** — Tambah pengingat transaksi berulang bulanan. Transaksi tidak dicatat otomatis: pengguna menekan tombol **Catat** saat jatuh tempo. Aturan ikut masuk ke backup/impor data.
 
 - **v1.11** — Feedback transaksi dipertahankan dekat input cepat; status simpan lebih mudah dibaca di layar kecil.
 
