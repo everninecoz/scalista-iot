@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IOT â€” Income Outcome Tracing</title>
+<title>IOT — Income Outcome Tracing</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -14,6 +14,9 @@
     --line: #D8D2BF;
     --ink: #202B24;
     --ink-soft: #6B7268;
+    --field-bg: #FFFDF7;
+    --field-border: #B8B09C;
+    --field-placeholder: #6B7268;
     --income: #2E6B52;
     --income-bg: #E4EEE8;
     --outcome: #7A2E2E;
@@ -36,6 +39,9 @@
     --line: #3A4238;
     --ink: #EDE9DD;
     --ink-soft: #9BA39A;
+    --field-bg: #151C17;
+    --field-border: #657466;
+    --field-placeholder: #AEB9B0;
     --income: #6FBF9A;
     --income-bg: rgba(111,191,154,0.15);
     --outcome: #E08A78;
@@ -69,6 +75,10 @@
   .top-bar-right{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
   .date-text{ font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--ink-soft); text-transform:capitalize; }
   .version-badge{ font-family:'IBM Plex Mono', monospace; font-size:10px; background:var(--stamp-bg); color:var(--stamp); padding:2px 8px; border-radius:10px; letter-spacing:0.5px; }
+  .user-badge-wrap{ display:inline-flex; align-items:center; gap:6px; }
+  .user-avatar{ width:20px; height:20px; border-radius:50%; background:var(--stamp); color:var(--paper);
+    font-family:'IBM Plex Mono', monospace; font-size:10px; font-weight:700; display:inline-flex;
+    align-items:center; justify-content:center; text-transform:uppercase; flex:0 0 auto; }
   .save-status{ font-size:10.5px; font-family:'IBM Plex Mono', monospace; padding:2px 8px; border-radius:10px; display:none; align-items:center; gap:5px; line-height:1.35; }
   .save-status.show{ display:inline-flex; }
   .save-status.saving{ background:var(--stamp-bg); color:var(--stamp); }
@@ -229,9 +239,10 @@
   .balance-split-item.credit .bs-value.over{ color:var(--outcome); }
   .balance-split-item.credit .bs-value.clear{ color:var(--ink-soft); font-weight:600; }
 
-  .quick-stats{ display:flex; justify-content:space-around; margin-top:20px; padding-top:16px; border-top:1px dashed var(--line); }
+  .quick-stats{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px 8px; margin-top:20px; padding-top:16px; border-top:1px dashed var(--line); }
   .qs-item{ display:flex; flex-direction:column; align-items:center; gap:2px; }
   .qs-num{ font-family:'IBM Plex Mono', monospace; font-size:17px; font-weight:700; color:var(--ink); }
+  .qs-num.qs-streak{ color:var(--income); }
   .qs-label{ font-size:9.5px; letter-spacing:0.5px; text-transform:uppercase; color:var(--ink-soft); }
 
   .accounts-list{ display:flex; flex-direction:column; gap:8px; }
@@ -378,21 +389,54 @@
   .modal-close:hover{ color:var(--outcome); }
   .modal-title{ font-size:15px; font-weight:700; margin-bottom:4px; }
   .modal-subtitle{ font-size:11px; color:var(--ink-soft); margin-bottom:16px; }
+  .profile-modal-box{ max-width:500px; }
+  .profile-hero{ display:flex; align-items:center; gap:12px; padding:2px 28px 14px 0; border-bottom:1px dashed var(--line); margin-bottom:14px; }
+  .profile-avatar{ width:46px; height:46px; display:grid; place-items:center; border-radius:14px; background:var(--stamp-bg); color:var(--stamp); border:1px solid var(--stamp); font-family:'IBM Plex Mono',monospace; font-size:18px; font-weight:700; cursor:pointer; background-size:cover; background-position:center; }
+  .profile-avatar.has-photo{ color:transparent; }.profile-avatar-action{ margin-top:5px; padding:0; border:0; background:none; color:var(--ink-soft); font:inherit; font-size:10px; text-decoration:underline; cursor:pointer; }
+  .profile-hero .modal-title{ margin:0; }.profile-handle{ margin-top:3px; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-soft); }
+  .profile-section{ margin-top:14px; padding:14px; border:1px solid var(--line); border-radius:10px; background:rgba(255,255,255,0.22); }
+  .profile-section-title{ font-size:10px; letter-spacing:1.3px; text-transform:uppercase; color:var(--stamp); margin-bottom:12px; }.profile-section-note{ font-size:10.5px; color:var(--ink-soft); line-height:1.45; margin:-4px 0 12px; }
+  .profile-save{ margin-top:12px !important; }.profile-action-card{ padding-top:12px; margin-top:12px; border-top:1px dashed var(--line); }.profile-action-title{ font-size:12px; font-weight:600; margin-bottom:9px; }
+  body.dark .profile-section{ background:#1B231D; border-color:var(--field-border); }
 
-  .split-row{ display:grid; grid-template-columns: 1fr 110px 44px; gap:6px; margin-bottom:6px; align-items:center; }
-  .split-row input[type=text], .split-row input[type=number]{ font-family:'Space Grotesk',sans-serif; font-size:12.5px; border:1px solid var(--line); border-radius:4px; padding:7px 8px; background:rgba(255,255,255,0.5); color:var(--ink); }
-  .split-row input[type=number]{ font-family:'IBM Plex Mono',monospace; }
-  .split-row button.split-del{ height:32px; padding:0; }
+  .split-person{ border:1px solid var(--line); border-radius:6px; padding:10px 10px 8px; margin-bottom:10px; background:rgba(255,255,255,0.25); }
+  .split-person-header{ display:grid; grid-template-columns:1fr 70px; gap:6px; margin-bottom:8px; }
+  .split-person-header input[type=text]{ font-family:'Space Grotesk',sans-serif; font-size:12.5px; font-weight:600; border:1px solid var(--line); border-radius:4px; padding:7px 8px; background:rgba(255,255,255,0.5); color:var(--ink); }
+  .split-person-header button{ background:none; border:1px solid var(--line); color:var(--ink-soft); font-size:10.5px; border-radius:4px; cursor:pointer; }
+  .split-person-header button:hover{ border-color:var(--outcome); color:var(--outcome); }
+  .split-item-row{ display:grid; grid-template-columns:1fr 90px 26px; gap:5px; margin-bottom:5px; align-items:center; }
+  .split-item-row input[type=text], .split-item-row input[type=number]{ font-family:'Space Grotesk',sans-serif; font-size:12px; border:1px solid var(--line); border-radius:4px; padding:6px 7px; background:rgba(255,255,255,0.5); color:var(--ink); }
+  .split-item-row input[type=number]{ font-family:'IBM Plex Mono',monospace; }
+  .split-item-row button{ background:none; border:1px solid var(--line); color:var(--ink-soft); font-size:13px; line-height:1; border-radius:4px; cursor:pointer; height:28px; }
+  .split-item-row button:hover{ border-color:var(--outcome); color:var(--outcome); }
+  .split-add-item-btn{ background:none; border:1px dashed var(--line); color:var(--ink-soft); font-size:11px; border-radius:4px; padding:5px 10px; cursor:pointer; width:100%; margin-top:2px; }
+  .split-add-item-btn:hover{ border-color:var(--goal); color:var(--goal); }
   .split-add-btn{ background:none; border:1px dashed var(--line); color:var(--ink-soft); font-size:12px; border-radius:4px; padding:7px 12px; cursor:pointer; width:100%; margin-top:2px; }
   .split-add-btn:hover{ border-color:var(--stamp); color:var(--stamp); }
   .split-pct-row{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin:14px 0; }
   .split-pct-row div label{ font-size:11px; color:var(--ink-soft); display:block; margin-bottom:4px; }
   .split-pct-row input{ width:100%; height:32px; font-family:'IBM Plex Mono',monospace; font-size:12.5px; border:1px solid var(--line); border-radius:4px; padding:0 8px; background:rgba(255,255,255,0.5); color:var(--ink); }
+  .split-discount-row{ display:grid; grid-template-columns: 1fr 90px; gap:10px; margin:0 0 14px; }
+  .split-discount-row label{ font-size:11px; color:var(--ink-soft); display:block; margin-bottom:4px; }
+  .split-discount-row input[type=number]{ width:100%; height:32px; font-family:'IBM Plex Mono',monospace; font-size:12.5px; border:1px solid var(--line); border-radius:4px; padding:0 8px; background:rgba(255,255,255,0.5); color:var(--ink); }
+  .split-discount-row select{ width:100%; height:32px; font-family:'Space Grotesk',sans-serif; font-size:12px; border:1px solid var(--line); border-radius:4px; background:rgba(255,255,255,0.5); color:var(--ink); }
   .split-breakdown{ background:rgba(255,255,255,0.4); border:1px solid var(--line); border-radius:6px; padding:12px 14px; margin-top:4px; }
-  .split-breakdown .sb-person{ display:flex; justify-content:space-between; font-size:12.5px; padding:5px 0; border-bottom:1px dotted var(--line); }
+  .split-breakdown .sb-person{ display:flex; justify-content:space-between; font-size:12.5px; padding:5px 0; border-bottom:1px dotted var(--line); align-items:flex-start; }
   .split-breakdown .sb-person .sb-detail{ font-size:10px; color:var(--ink-soft); }
+  .split-breakdown .sb-person .sb-items{ font-size:10px; color:var(--ink-soft); margin-top:2px; }
+  .split-breakdown .sb-discount{ display:flex; justify-content:space-between; font-size:11.5px; color:var(--income); padding:4px 0; }
   .split-breakdown .sb-total{ display:flex; justify-content:space-between; font-weight:600; font-size:13.5px; padding-top:10px; margin-top:6px; border-top:1px dashed var(--line); }
   .split-actions{ display:flex; gap:8px; margin-top:14px; }
+
+  .currency-convert-row{ display:grid; grid-template-columns:1fr 1.3fr auto 1.3fr; gap:6px; align-items:center; margin-bottom:12px; }
+  .currency-convert-row input[type=number]{ font-family:'IBM Plex Mono',monospace; font-size:13px; border:1px solid var(--line); border-radius:4px; padding:8px; background:rgba(255,255,255,0.5); color:var(--ink); min-width:0; }
+  .currency-convert-row select{ font-family:'Space Grotesk',sans-serif; font-size:12px; border:1px solid var(--line); border-radius:4px; padding:8px 4px; background:rgba(255,255,255,0.5); color:var(--ink); min-width:0; }
+  .currency-arrow{ text-align:center; color:var(--ink-soft); }
+  .currency-result{ font-family:'IBM Plex Mono',monospace; font-size:22px; font-weight:700; color:var(--stamp); text-align:center; background:var(--stamp-bg); border:1px solid var(--stamp); border-radius:6px; padding:14px 8px; margin-bottom:16px; word-break:break-word; }
+  .currency-rate-row{ display:grid; grid-template-columns:1fr 130px; gap:8px; align-items:center; margin-bottom:6px; }
+  .currency-rate-row span{ font-size:12px; color:var(--ink); }
+  .currency-rate-row input{ font-family:'IBM Plex Mono',monospace; font-size:11.5px; border:1px solid var(--line); border-radius:4px; padding:5px 6px; background:rgba(255,255,255,0.5); color:var(--ink); text-align:right; }
+  .currency-group-label{ font-size:9.5px; letter-spacing:1px; text-transform:uppercase; color:var(--ink-soft); margin:10px 0 4px; }
   .split-actions button{ flex:1; border:none; border-radius:4px; font-size:12px; padding:9px 12px; cursor:pointer; }
   .split-actions .print-btn{ background:var(--ink); color:var(--paper); }
   .split-actions .record-btn{ background:var(--stamp); color:var(--paper); }
@@ -431,6 +475,9 @@
   .storage-banner strong{ display:block; margin-bottom:3px; }
 
   .guest-banner{ background:var(--goal-bg); color:var(--goal); border-color:var(--goal); display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; }
+  .view-only-banner{ background:var(--stamp-bg); color:var(--stamp); border-color:var(--stamp); }
+  body.view-only .hero-input-card{ opacity:0.55; }
+  body.view-only #quickInput{ cursor:not-allowed; }
   .guest-save-row{ display:flex; gap:6px; flex:0 0 auto; }
   .guest-save-row input{ font-family:'Space Grotesk',sans-serif; font-size:12px; border:1px solid var(--goal); border-radius:4px; padding:6px 10px; background:rgba(255,255,255,0.6); color:var(--ink); }
   .guest-save-row button{ background:var(--goal); color:#fff; border:none; border-radius:4px; padding:6px 14px; font-size:12px; cursor:pointer; }
@@ -492,6 +539,34 @@
   button{ transition: background-color 0.15s var(--ease), border-color 0.15s var(--ease), color 0.15s var(--ease), transform 0.1s var(--ease), opacity 0.15s var(--ease); }
   button:active{ transform: scale(0.97); }
   button:focus-visible, input:focus-visible, select:focus-visible{ outline:2px solid var(--stamp); outline-offset:2px; }
+  /* Form dalam modal: satu permukaan input yang tegas di mode terang maupun gelap. */
+  .modal-box input:not([type=file]), .modal-box select{
+    background:var(--field-bg) !important; border-color:var(--field-border) !important; color:var(--ink) !important;
+  }
+  .modal-box input::placeholder{ color:var(--field-placeholder); opacity:1; }
+  .modal-box input:focus, .modal-box select:focus{ border-color:var(--stamp) !important; box-shadow:0 0 0 2px color-mix(in srgb, var(--stamp) 22%, transparent); }
+  body.dark .split-person, body.dark .split-breakdown, body.dark .goal-card{ background:#1D251F; border-color:var(--field-border); }
+  /* Audit kontras menyeluruh: semua permukaan form dan pilihan native di mode gelap. */
+  body.dark .hero-input-card,
+  body.dark .filter-bar input, body.dark .filter-bar select,
+  body.dark .add-account-form input, body.dark .add-account-form select,
+  body.dark .budget-form-grid input, body.dark .budget-form-grid select,
+  body.dark .currency-convert-row input, body.dark .currency-convert-row select,
+  body.dark .currency-rate-row input,
+  body.dark .guest-save-row input, body.dark .login-box input{
+    background:var(--field-bg); color:var(--ink); border-color:var(--field-border);
+  }
+  body.dark .hero-input-card:focus-within,
+  body.dark .filter-bar input:focus, body.dark .filter-bar select:focus,
+  body.dark .add-account-form input:focus, body.dark .add-account-form select:focus,
+  body.dark .currency-convert-row input:focus, body.dark .currency-convert-row select:focus,
+  body.dark .currency-rate-row input:focus{
+    background:#101612; border-color:var(--stamp); box-shadow:0 0 0 2px rgba(217,185,104,0.20);
+  }
+  body.dark select, body.dark select option{ background:#151C17; color:#F7F4EB; }
+  body.dark .account-chip:hover{ background:#29342B; }
+  body.dark .menu-dropdown, body.dark .changelog, body.dark .data-panel{ border-color:var(--field-border); }
+  body.dark .calendar-day:not(.has-entry):hover{ background:#29342B; border-color:var(--field-border); }
 </style>
 </head>
 <body class="dark">
@@ -504,7 +579,7 @@
   </div>
 
   <div class="storage-banner guest-banner" id="guestBanner">
-    <span><strong>Mode Tamu â€” data ini belum tersimpan</strong>Coba-coba dulu sepuasnya. Kalau sudah cocok, simpan dengan username supaya tidak hilang saat refresh.</span>
+    <span><strong>Mode Tamu — data ini belum tersimpan</strong>Coba-coba dulu sepuasnya. Kalau sudah cocok, simpan dengan username supaya tidak hilang saat refresh.</span>
     <div class="guest-save-row">
       <input type="text" id="guestSaveUsername" placeholder="Pilih username">
       <input type="password" id="guestSavePassword" placeholder="Pilih password">
@@ -512,13 +587,16 @@
     </div>
   </div>
   <div class="storage-banner" id="loggedInBanner" hidden></div>
+  <div class="storage-banner view-only-banner" id="viewOnlyBanner" hidden>
+    <span><strong>&#9673; Mode Hanya Lihat aktif</strong> Transaksi, akun, anggaran, dan pengaturan lain tidak bisa diubah selama mode ini menyala. Klik "hanya lihat" di pojok atas lagi untuk mematikan.</span>
+  </div>
 
   <div class="login-gate" id="loginGate">
     <div class="login-box">
       <div class="login-icon">Rp</div>
       <div class="login-brand">IOT</div>
       <div class="login-sub">Income Outcome Tracing</div>
-      <div class="login-hint">Masukkan username &amp; password. Kalau username belum ada, akun baru otomatis dibuat. Kalau sudah ada, password wajib cocok â€” jadi username yang sama tidak bisa dipakai orang lain.</div>
+      <div class="login-hint">Masukkan username &amp; password. Kalau username belum ada, akun baru otomatis dibuat. Kalau sudah ada, password wajib cocok — jadi username yang sama tidak bisa dipakai orang lain.</div>
       <input type="text" id="usernameInput" placeholder="Username, contoh: budi123" autocomplete="username">
       <input type="password" id="passwordInput" placeholder="Password" autocomplete="current-password">
       <button id="loginBtn">Masuk / Daftar</button>
@@ -540,13 +618,17 @@
     </div>
     <div class="top-bar-right">
       <span class="date-text" id="todayDate">memuat...</span>
-      <span class="version-badge" id="versionBadge">v1.29</span>
-      <span class="version-badge" id="userBadge" hidden></span>
+      <span class="version-badge" id="versionBadge">v1.37</span>
+      <span class="user-badge-wrap" id="userBadgeWrap" hidden>
+        <span class="user-avatar" id="userAvatar"></span>
+        <span class="version-badge" id="userBadge"></span>
+      </span>
       <span class="save-status" id="saveStatus"></span>
       <button class="version-link" id="toggleData">cadangan data</button>
-      <a class="version-link" href="https://github.com/everninecoz/Income-Outcome-Tracing-Indonesia-/commits/main" target="_blank" rel="noopener noreferrer">riwayat versi ↗</a>
+      <a class="version-link" href="https://github.com/everninecoz/scalista-iot/commits/main" target="_blank" rel="noopener noreferrer">riwayat versi &nearr;</a>
       <button class="version-link" id="toggleDarkMode">&#9789; gelap</button>
-      <button class="version-link" id="togglePrivacyMode" aria-pressed="false" title="Sembunyikan atau tampilkan nominal">&#9689; privasi</button>
+      <button class="version-link" id="togglePrivacyMode" aria-pressed="false" title="Sembunyikan atau tampilkan saldo bersih">&#9689; privasi</button>
+      <button class="version-link" id="toggleViewOnly" aria-pressed="false" title="Kunci sementara supaya data tidak bisa diedit/dihapus">&#9673; hanya lihat</button>
       <div class="menu-wrap">
         <button class="menu-btn" id="toggleMenu">Menu &#9662;</button>
         <div class="menu-dropdown" id="menuDropdown">
@@ -555,19 +637,28 @@
           <button data-open="goals">Rencana Dana</button>
           <button data-open="recurring">Transaksi Berulang</button>
           <button data-open="split">Splitbill Calculator</button>
-          <button data-open="switch" id="switchAccountBtn">Profil Login &amp; Keluar</button>
+          <button data-open="currency">Kalkulator Mata Uang</button>
+          <button data-open="profile" id="profileBtn">Profil &amp; Keamanan</button>
+          <button data-open="switch" id="switchAccountBtn">Keluar</button>
         </div>
       </div>
     </div>
     <div class="changelog" id="changelogPanel">
-      <div class="cl-item"><span class="cl-ver">v0.1â€“v0.9</span><div class="cl-note">Dasar: catat transaksi dari teks, banyak akun & kartu kredit, anggaran bulanan, Rencana Dana, dashboard 3 kolom, dan koneksi ke Supabase.</div></div>
+      <div class="cl-item"><span class="cl-ver">v1.37</span><div class="cl-note">Cadangan kini memiliki pengingat, waktu simpan tampil lebih jelas, dan menu Cadangan Data dapat memeriksa koneksi Supabase.</div></div>
+      <div class="cl-item"><span class="cl-ver">v1.36</span><div class="cl-note">Sesi akun kini memakai token per-tab (5 menit) setelah migrasi Supabase. Tambah Profil &amp; Keamanan untuk data diri opsional, ganti username, dan ganti password.</div></div>
+      <div class="cl-item"><span class="cl-ver">v1.35</span><div class="cl-note">Perbaikan Mode Hanya Lihat, pembersihan teks karakter, dan penyelarasan tautan serta riwayat versi.</div></div>
+      <div class="cl-item"><span class="cl-ver">v1.34</span><div class="cl-note">Jaring pengaman proses memuat diperkuat agar dashboard memberi pesan yang jelas bila koneksi data terlalu lama.</div></div>
+      <div class="cl-item"><span class="cl-ver">v1.33</span><div class="cl-note">Mode Hanya Lihat ditambahkan untuk mengunci perubahan transaksi dan pengaturan sementara.</div></div>
+      <div class="cl-item"><span class="cl-ver">v1.32</span><div class="cl-note">Kalkulator mata uang dan kurs manual pribadi ditambahkan ke Menu.</div></div>
+      <div class="cl-item"><span class="cl-ver">v1.31</span><div class="cl-note">Statistik Hari Tanpa Belanja ditambahkan ke kartu Saldo.</div></div>
+      <div class="cl-item"><span class="cl-ver">v0.1–v0.9</span><div class="cl-note">Dasar: catat transaksi dari teks, banyak akun & kartu kredit, anggaran bulanan, Rencana Dana, dashboard 3 kolom, dan koneksi ke Supabase.</div></div>
       <div class="cl-item"><span class="cl-ver">v1.0</span><div class="cl-note">Login pakai username, Menu dropdown, input di tengah layar.</div></div>
       <div class="cl-item"><span class="cl-ver">v1.1</span><div class="cl-note">Mode Tamu untuk coba-coba sebelum simpan permanen.</div></div>
       <div class="cl-item"><span class="cl-ver">v1.2</span><div class="cl-note">Ganti Akun/Keluar, cegah username ketimpa tanpa sadar.</div></div>
       <div class="cl-item"><span class="cl-ver">v1.3</span><div class="cl-note">Pemolesan desain: hover, radius seragam, animasi modal.</div></div>
       <div class="cl-item"><span class="cl-ver">v1.4</span><div class="cl-note">Kartu Akun dipindah ke Menu biar kolom lebih rapi.</div></div>
       <div class="cl-item"><span class="cl-ver">v1.5</span><div class="cl-note">Statistik ringkas di kartu Saldo, feedback auto-hilang.</div></div>
-      <div class="cl-item"><span class="cl-ver">v1.6</span><div class="cl-note">Keamanan: login sekarang wajib password, diverifikasi di server (bukan JS) â€” tabel database dikunci total. Tambah validasi impor data, kunci akun kartu kredit dari hapus, mode gelap, batas peringatan anggaran bisa diatur, dan panel riwayat versi dirapikan (scroll, lebih ringkas).</div></div>
+      <div class="cl-item"><span class="cl-ver">v1.6</span><div class="cl-note">Keamanan: login sekarang wajib password, diverifikasi di server (bukan JS) — tabel database dikunci total. Tambah validasi impor data, kunci akun kartu kredit dari hapus, mode gelap, batas peringatan anggaran bisa diatur, dan panel riwayat versi dirapikan (scroll, lebih ringkas).</div></div>
       <div class="cl-item"><span class="cl-ver">v1.7</span><div class="cl-note">Status simpan real-time (Menyimpan/Tersimpan/Gagal), konfirmasi hapus transaksi, edit transaksi (tanggal/deskripsi/nominal/kategori), filter bulan/akun/kategori + pencarian, mutasi saldo (saldo berjalan per akun), dan parser baru: "kemarin", "tanggal N", dan transfer antar akun.</div></div>
       <div class="cl-item"><span class="cl-ver">v1.8</span><div class="cl-note">Mode gelap menjadi tampilan awal. Impor data diperkuat: validasi ID/referensi, dukungan transfer, penolakan duplikasi, render input pengguna lebih aman, dan pemulihan data saat simpan impor gagal.</div></div>
       <div class="cl-item"><span class="cl-ver">v1.9</span><div class="cl-note">Kontras dark mode ditingkatkan untuk input, filter, formulir, dan riwayat transaksi agar teks lebih nyaman dibaca.</div></div>
@@ -580,6 +671,7 @@
       <div class="cl-item"><span class="cl-ver">v1.19</span><div class="cl-note">Kartu Tren dipindah ke kolom tengah tepat di bawah kotak Input (sejajar lebarnya), dan rentang tren dipersingkat dari 12 ke 6 bulan supaya batang grafik lebih lega dan tidak berdesakan.</div></div>
       <div class="cl-item"><span class="cl-ver">v1.20</span><div class="cl-note">Kartu Saldo sekarang membedakan Saldo Utama (tunai/debit/QRIS) dan Kartu Kredit (utang berjalan) di bawah angka Kekayaan Bersih, biar nggak tercampur jadi satu angka besar.</div></div>
       <div class="cl-item"><span class="cl-ver">v1.21</span><div class="cl-note">Tampilan limit kartu kredit disederhanakan jadi "Limit terpakai: Rp X dari Rp Y" (langsung nunjuk pemakaian), gantiin perhitungan sisa limit yang sebelumnya.</div></div>
+      <div class="cl-item"><span class="cl-ver">v1.30</span><div class="cl-note">Mode Privasi kini hanya menyamarkan Saldo Bersih. Mutasi, total, ringkasan, dan laporan tetap terlihat agar tetap nyaman dipakai.</div></div>
       <div class="cl-item"><span class="cl-ver">v1.29</span><div class="cl-note">Mode Privasi baru: sembunyikan nominal di dashboard dengan satu tombol saat layar dilihat orang lain. Pilihan ini tersimpan di akun.</div></div>
       <div class="cl-item"><span class="cl-ver">v1.28</span><div class="cl-note">Tambahan state memuat setelah login serta pesan kosong yang lebih jelas pada kalender dan laporan bulanan ketika belum ada catatan.</div></div>
       <div class="cl-item"><span class="cl-ver">v1.27</span><div class="cl-note">Ringkasan total kini menampilkan pemakaian limit setiap kartu kredit, dengan penanda merah mulai 80% agar kartu yang mendekati limit cepat terlihat.</div></div>
@@ -590,12 +682,14 @@
       <div class="cl-item"><span class="cl-ver">v1.22</span><div class="cl-note">Kotak stempel Saldo tidak lagi miring, dan kotak "Sisa Kredit" di kartu Saldo sekarang menghitung limit dikurangi utang (bukan cuma nampilin utang), plus perbaikan teks kepotong di kotak Saldo Utama.</div></div>
     </div>
     <div class="data-panel" id="dataPanel">
-      <p>Data tersimpan otomatis di database, terkunci ke akun username+password kamu â€” tetap ada meski di-refresh, ditutup, atau dibuka dari device lain. Ekspor/impor di bawah ini tetap berguna sebagai cadangan tambahan.</p>
+      <p>Data tersimpan otomatis di database, terkunci ke akun username+password kamu — tetap ada meski di-refresh, ditutup, atau dibuka dari device lain. Ekspor/impor di bawah ini tetap berguna sebagai cadangan tambahan.</p>
       <div class="dp-row">
         <button id="exportDataBtn">Ekspor Data</button>
         <label class="file-btn" for="importDataInput">Impor Data</label>
         <input type="file" id="importDataInput" accept="application/json">
       </div>
+      <p class="dp-pdf-hint" id="backupReminder">Cadangkan data secara berkala agar ada salinan pribadi di perangkat Anda.</p>
+      <div class="dp-row"><button id="checkConnectionBtn">Cek Koneksi Database</button><span id="connectionStatus" aria-live="polite"></span></div>
       <div class="dp-row">
         <button id="exportPdfFromBackupBtn">Simpan sebagai PDF</button>
       </div>
@@ -626,6 +720,7 @@
           <div class="qs-item"><span class="qs-num" id="qsTransaksi">0</span><span class="qs-label">Transaksi</span></div>
           <div class="qs-item"><span class="qs-num" id="qsAkun">0</span><span class="qs-label">Sumber Dana</span></div>
           <div class="qs-item"><span class="qs-num" id="qsTujuan">0</span><span class="qs-label">Tujuan Dana</span></div>
+          <div class="qs-item"><span class="qs-num qs-streak" id="qsStreak">0</span><span class="qs-label">Hari Tanpa Belanja</span></div>
         </div>
       </div>
       <div class="card financial-visual-card" id="financialVisualCard">
@@ -658,7 +753,7 @@
             <button id="resetFilterBtn" title="Reset filter">&#8635;</button>
           </div>
           <div class="list" id="list">
-            <div class="empty" id="emptyState"><span class="empty-icon">&#128220;</span>Belum ada transaksi. Ketik transaksi pertama kamu di atas.</div>
+            <div class="empty" id="emptyState"><span class="empty-icon">&#9776;</span>Belum ada transaksi. Ketik transaksi pertama kamu di atas.</div>
           </div>
         </div>
       </div>
@@ -774,7 +869,7 @@
     <div class="modal-box">
       <button class="modal-close" id="closeGoalsModal" aria-label="Tutup dialog rencana dana">&times;</button>
       <div class="modal-title" id="goalsModalTitle">Rencana Dana</div>
-      <div class="modal-subtitle">Dana darurat, dana haji, atau tujuan besar lainnya â€” nabung lewat input cepat, pantau progresnya di sini.</div>
+      <div class="modal-subtitle">Dana darurat, dana haji, atau tujuan besar lainnya — nabung lewat input cepat, pantau progresnya di sini.</div>
       <div id="goalsList"></div>
       <div class="goal-panel open" id="goalPanel">
         <div class="add-account-form">
@@ -807,10 +902,23 @@
     <div class="modal-box">
       <button class="modal-close" id="closeSplitModal" aria-label="Tutup dialog split bill">&times;</button>
       <div class="modal-title" id="splitModalTitle">Splitbill Calculator</div>
-      <div class="modal-subtitle">Hitung berapa yang harus dibayar tiap orang, termasuk pajak &amp; service charge.</div>
+      <div class="modal-subtitle">Tambah tiap orang, lalu catat item belanjaan masing-masing. Diskon, pajak, dan service charge dihitung proporsional sesuai porsi tiap orang.</div>
 
       <div id="splitParticipantsList"></div>
       <button class="split-add-btn" id="addParticipantBtn">+ Tambah Orang</button>
+      <div class="split-discount-row">
+        <div>
+          <label>Diskon</label>
+          <input type="number" id="discountValInput" value="0" min="0">
+        </div>
+        <div>
+          <label>Jenis</label>
+          <select id="discountTypeInput">
+            <option value="percent">%</option>
+            <option value="flat">Rp</option>
+          </select>
+        </div>
+      </div>
       <div class="split-pct-row">
         <div>
           <label>Pajak (%)</label>
@@ -826,6 +934,26 @@
         <button class="print-btn" id="printSplitBtn">Cetak Struk</button>
         <button class="record-btn" id="recordSplitBtn">Catat sebagai Pengeluaran</button>
       </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="currencyModalOverlay" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="currencyModalTitle">
+    <div class="modal-box">
+      <button class="modal-close" id="closeCurrencyModal" aria-label="Tutup dialog kalkulator mata uang">&times;</button>
+      <div class="modal-title" id="currencyModalTitle">Kalkulator Mata Uang</div>
+      <div class="modal-subtitle">Kurs di bawah ini perkiraan dan diatur manual &mdash; bukan data real-time. Sesuaikan sendiri di bagian "Atur Kurs" biar akurat.</div>
+
+      <div class="currency-convert-row">
+        <input type="number" id="currencyAmountInput" value="1" min="0">
+        <select id="currencyFromSelect"></select>
+        <span class="currency-arrow">&#8594;</span>
+        <select id="currencyToSelect"></select>
+      </div>
+      <div class="currency-result" id="currencyResult">Rp 0</div>
+
+      <div class="cat-title">Atur Kurs (Rp per 1 unit)</div>
+      <div id="currencyRatesList"></div>
+      <button class="save" id="saveCurrencyRatesBtn">Simpan Kurs</button>
     </div>
   </div>
 
@@ -849,7 +977,34 @@
     </div>
   </div>
 
-  <div class="app-footer">IOT â€” Income Outcome Tracing &middot; oleh <span class="stamp-name">Scalista</span></div>
+  <div class="modal-overlay" id="profileModalOverlay" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="profileModalTitle">
+    <div class="modal-box profile-modal-box">
+      <button class="modal-close" id="closeProfileModal" aria-label="Tutup dialog profil">&times;</button>
+      <div class="profile-hero"><button class="profile-avatar" id="profileAvatar" type="button" title="Pilih avatar">A</button><input id="profileAvatarInput" type="file" accept="image/png,image/jpeg,image/webp" hidden><div><div class="modal-title" id="profileModalTitle">Profil &amp; Keamanan</div><div class="profile-handle" id="profileHandle">@akun</div><button class="profile-avatar-action" id="removeProfileAvatarBtn" type="button" hidden>Hapus foto</button></div></div>
+      <div class="modal-subtitle">Lengkapi seperlunya agar akun terasa lebih personal. Data ini tidak tampil di transaksi.</div>
+      <section class="profile-section"><div class="profile-section-title">Data diri</div><div class="budget-form-grid">
+        <label class="full-row" for="profileDisplayName">Nama tampilan</label>
+        <input class="full-row" id="profileDisplayName" type="text" maxlength="60" placeholder="Contoh: Scalista">
+        <label class="full-row" for="profileEmail">Email</label>
+        <input class="full-row" id="profileEmail" type="email" maxlength="120" placeholder="opsional">
+        <label class="full-row" for="profilePhone">Nomor kontak</label>
+        <input class="full-row" id="profilePhone" type="tel" maxlength="32" placeholder="opsional">
+        <label class="full-row" for="profileCity">Kota</label>
+        <input class="full-row" id="profileCity" type="text" maxlength="60" placeholder="opsional">
+      </div><button class="save profile-save" id="saveProfileBtn">Simpan Data Diri</button></section>
+      <section class="profile-section security"><div class="profile-section-title">Keamanan akun</div><div class="profile-section-note">Username dan password hanya berubah setelah password saat ini dikonfirmasi.</div><div class="profile-action-card"><div class="profile-action-title">Ganti username</div><div class="budget-form-grid">
+        <input class="full-row" id="newUsernameInput" type="text" maxlength="32" placeholder="Username baru: huruf kecil, angka, underscore">
+        <input class="full-row" id="usernameCurrentPassword" type="password" maxlength="128" placeholder="Password saat ini">
+      </div><button class="save" id="changeUsernameBtn">Perbarui Username</button></div>
+      <div class="profile-action-card"><div class="profile-action-title">Ganti password</div><div class="budget-form-grid">
+        <input class="full-row" id="passwordCurrentInput" type="password" maxlength="128" placeholder="Password saat ini">
+        <input class="full-row" id="passwordNewInput" type="password" maxlength="128" placeholder="Password baru (minimal 4 karakter)">
+      </div><button class="save" id="changePasswordBtn">Perbarui Password</button></div></section>
+      <div class="hero-feedback" id="profileFeedback" role="status" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <div class="app-footer">IOT — Income Outcome Tracing &middot; oleh <span class="stamp-name">Scalista</span></div>
 </div>
 
 <div id="printReceipt"></div>
@@ -857,6 +1012,7 @@
 
 <script>
 (function(){
+  // ===== 1. KONFIGURASI, STATE, DAN REFERENSI DOM =====
   const ACC_KEY = 'accounts';
   const ENTRY_KEY = 'ledger-entries';
   const BUDGET_KEY = 'budget';
@@ -870,9 +1026,35 @@
   let recurringRules = [];
   let customCategories = { income: [], outcome: [] };
   let budget = { monthly: null, categories: {} };
-  let settings = { darkMode: true, budgetWarnPct: 70, privacyMode: false };
+  let settings = { darkMode: true, budgetWarnPct: 70, privacyMode: false, viewOnlyMode: false };
   let pending = null;
   let splitParticipants = [];
+
+  const CURRENCY_RATES_KEY = 'currencyRates';
+  const defaultCurrencyRates = {
+    IDR: 1,
+    USD: 15800, EUR: 17200, GBP: 20000, JPY: 105, SGD: 11700,
+    MYR: 3550, AUD: 10500, CNY: 2200, KRW: 11.5, THB: 460,
+    BTC: 1650000000, ETH: 58000000, USDT: 15800, BNB: 9800000
+  };
+  let currencyRates = Object.assign({}, defaultCurrencyRates);
+  const currencyList = [
+    { code:'IDR', label:'Rupiah (IDR)', group:'Mata Uang' },
+    { code:'USD', label:'Dolar AS (USD)', group:'Mata Uang' },
+    { code:'EUR', label:'Euro (EUR)', group:'Mata Uang' },
+    { code:'GBP', label:'Poundsterling (GBP)', group:'Mata Uang' },
+    { code:'JPY', label:'Yen Jepang (JPY)', group:'Mata Uang' },
+    { code:'SGD', label:'Dolar Singapura (SGD)', group:'Mata Uang' },
+    { code:'MYR', label:'Ringgit Malaysia (MYR)', group:'Mata Uang' },
+    { code:'AUD', label:'Dolar Australia (AUD)', group:'Mata Uang' },
+    { code:'CNY', label:'Yuan China (CNY)', group:'Mata Uang' },
+    { code:'KRW', label:'Won Korea (KRW)', group:'Mata Uang' },
+    { code:'THB', label:'Baht Thailand (THB)', group:'Mata Uang' },
+    { code:'BTC', label:'Bitcoin (BTC)', group:'Kripto' },
+    { code:'ETH', label:'Ethereum (ETH)', group:'Kripto' },
+    { code:'USDT', label:'Tether (USDT)', group:'Kripto' },
+    { code:'BNB', label:'BNB (BNB)', group:'Kripto' }
+  ];
 
   const listEl = document.getElementById('list');
   const emptyEl = document.getElementById('emptyState');
@@ -885,6 +1067,7 @@
   const qsTransaksiEl = document.getElementById('qsTransaksi');
   const qsAkunEl = document.getElementById('qsAkun');
   const qsTujuanEl = document.getElementById('qsTujuan');
+  const qsStreakEl = document.getElementById('qsStreak');
   const totalIncomeEl = document.getElementById('totalIncome');
   const totalOutcomeEl = document.getElementById('totalOutcome');
   const totalDebtEl = document.getElementById('totalDebt');
@@ -914,11 +1097,16 @@
   const addAccBtn = document.getElementById('addAccBtn');
   const toggleDarkModeBtn = document.getElementById('toggleDarkMode');
   const togglePrivacyModeBtn = document.getElementById('togglePrivacyMode');
+  const toggleViewOnlyBtn = document.getElementById('toggleViewOnly');
+  const viewOnlyBannerEl = document.getElementById('viewOnlyBanner');
   const toggleDataBtn = document.getElementById('toggleData');
   const dataPanelEl = document.getElementById('dataPanel');
   const exportDataBtn = document.getElementById('exportDataBtn');
   const exportPdfFromBackupBtn = document.getElementById('exportPdfFromBackupBtn');
   const importDataInputEl = document.getElementById('importDataInput');
+  const checkConnectionBtn = document.getElementById('checkConnectionBtn');
+  const connectionStatusEl = document.getElementById('connectionStatus');
+  const backupReminderEl = document.getElementById('backupReminder');
   const clarifyEl = document.getElementById('clarify');
   const clarifyQuestionEl = document.getElementById('clarifyQuestion');
   const clarifyOptionsEl = document.getElementById('clarifyOptions');
@@ -950,6 +1138,16 @@
   const addParticipantBtn = document.getElementById('addParticipantBtn');
   const taxPctInputEl = document.getElementById('taxPctInput');
   const servicePctInputEl = document.getElementById('servicePctInput');
+  const discountValInputEl = document.getElementById('discountValInput');
+  const discountTypeInputEl = document.getElementById('discountTypeInput');
+  const currencyModalOverlayEl = document.getElementById('currencyModalOverlay');
+  const closeCurrencyModalBtn = document.getElementById('closeCurrencyModal');
+  const currencyAmountInputEl = document.getElementById('currencyAmountInput');
+  const currencyFromSelectEl = document.getElementById('currencyFromSelect');
+  const currencyToSelectEl = document.getElementById('currencyToSelect');
+  const currencyResultEl = document.getElementById('currencyResult');
+  const currencyRatesListEl = document.getElementById('currencyRatesList');
+  const saveCurrencyRatesBtn = document.getElementById('saveCurrencyRatesBtn');
   const splitBreakdownEl = document.getElementById('splitBreakdown');
   const printSplitBtn = document.getElementById('printSplitBtn');
   const recordSplitBtn = document.getElementById('recordSplitBtn');
@@ -983,6 +1181,25 @@
   const newRecurringCategoryEl = document.getElementById('newRecurringCategory');
   const newRecurringAccountEl = document.getElementById('newRecurringAccount');
   const newRecurringDueEl = document.getElementById('newRecurringDue');
+  const profileModalOverlayEl = document.getElementById('profileModalOverlay');
+  const closeProfileModalBtn = document.getElementById('closeProfileModal');
+  const profileDisplayNameEl = document.getElementById('profileDisplayName');
+  const profileEmailEl = document.getElementById('profileEmail');
+  const profilePhoneEl = document.getElementById('profilePhone');
+  const profileCityEl = document.getElementById('profileCity');
+  const saveProfileBtn = document.getElementById('saveProfileBtn');
+  const newUsernameInputEl = document.getElementById('newUsernameInput');
+  const usernameCurrentPasswordEl = document.getElementById('usernameCurrentPassword');
+  const changeUsernameBtn = document.getElementById('changeUsernameBtn');
+  const passwordCurrentInputEl = document.getElementById('passwordCurrentInput');
+  const passwordNewInputEl = document.getElementById('passwordNewInput');
+  const changePasswordBtn = document.getElementById('changePasswordBtn');
+  const profileFeedbackEl = document.getElementById('profileFeedback');
+  const profileAvatarEl = document.getElementById('profileAvatar');
+  const profileHandleEl = document.getElementById('profileHandle');
+  const profileAvatarInputEl = document.getElementById('profileAvatarInput');
+  const removeProfileAvatarBtn = document.getElementById('removeProfileAvatarBtn');
+  let profileAvatarData = '';
   const addRecurringBtn = document.getElementById('addRecurringBtn');
   let activeModalEl = null;
   let modalTriggerEl = null;
@@ -1008,10 +1225,22 @@
     if(restoreFocus && trigger && document.contains(trigger)) trigger.focus();
   }
 
+  let dashboardLoadingSafetyTimer = null;
   function setDashboardLoading(isLoading){
     if(!dashboardLoadingEl) return;
     dashboardLoadingEl.hidden = !isLoading;
     document.body.classList.toggle('app-loading', isLoading);
+    clearTimeout(dashboardLoadingSafetyTimer);
+    if(isLoading){
+      dashboardLoadingSafetyTimer = setTimeout(() => {
+        if(!dashboardLoadingEl.hidden){
+          console.error('Loading terlalu lama, dipaksa berhenti oleh jaring pengaman.');
+          dashboardLoadingEl.hidden = true;
+          document.body.classList.remove('app-loading');
+          setFeedback('Memuat data lebih lama dari biasanya. Coba refresh kalau data belum lengkap.', 'hero-feedback outcome');
+        }
+      }, 15000);
+    }
   }
   const storageBannerEl = document.getElementById('storageBanner');
   const guestBannerEl = document.getElementById('guestBanner');
@@ -1030,15 +1259,20 @@
   const passwordInputEl = document.getElementById('passwordInput');
   const guestSavePasswordEl = document.getElementById('guestSavePassword');
 
-  // ---- Multi-user identification lewat username + password (diverifikasi di server) ----
-  // Sesi hanya disimpan per-tab selama lima menit tanpa aktivitas; tidak memakai localStorage.
+  // ===== 2. OTENTIKASI & SESI =====
+  // Password hanya dikirim saat login/perubahan kredensial. Sesi memakai token per-tab selama 5 menit.
   let userId = null;
-  const SESSION_KEY = 'iot_temporary_session_v1';
+  let sessionToken = null;
+  let userProfile = null;
+  const SESSION_KEY = 'iot_token_session_v2';
   const SESSION_IDLE_MS = 5 * 60 * 1000;
   let sessionTimer = null;
   const userBadgeEl = document.getElementById('userBadge');
   function renderUserBadge(){
-    userBadgeEl.hidden = !userId;
+    const wrapEl = document.getElementById('userBadgeWrap');
+    if(wrapEl) wrapEl.hidden = !userId;
+    const avatarEl = document.getElementById('userAvatar');
+    if(avatarEl) avatarEl.textContent = userId ? userId.charAt(0).toUpperCase() : '';
     userBadgeEl.textContent = userId ? ('@' + userId) : '';
     loggedInBannerEl.hidden = !userId;
     loggedInBannerEl.textContent = userId ? ('Masuk sebagai @' + userId) : '';
@@ -1051,30 +1285,44 @@
   }
   function endSession(){
     clearTemporarySession();
-    userId = null; userPassword = null; isGuest = false;
+    const tokenToRevoke = sessionToken;
+    userId = null; sessionToken = null; userProfile = null; isGuest = false;
+    if(tokenToRevoke && supabaseClient) supabaseClient.rpc('logout_session', { p_session_token: tokenToRevoke }).catch(() => {});
     renderUserBadge();
-    document.body.classList.remove('guest-mode');
+    document.body.classList.remove('guest-mode', 'view-only', 'privacy-mode');
+    settings = { darkMode: true, budgetWarnPct: 70, privacyMode: false, viewOnlyMode: false };
     loginGateEl.classList.remove('hidden');
     usernameInputEl.focus();
   }
   function refreshTemporarySession(){
-    if(!userId || !userPassword || isGuest) return;
+    if(!userId || !sessionToken || isGuest) return;
     const expiresAt = Date.now() + SESSION_IDLE_MS;
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ userId, userPassword, expiresAt }));
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ userId, sessionToken, expiresAt }));
     clearTimeout(sessionTimer);
     sessionTimer = setTimeout(endSession, SESSION_IDLE_MS);
   }
   function restoreTemporarySession(){
     try{
       const saved = JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null');
-      if(!saved || !saved.userId || !saved.userPassword || saved.expiresAt <= Date.now()) { clearTemporarySession(); return; }
-      userId = saved.userId; userPassword = saved.userPassword; isGuest = false;
-      renderUserBadge(); loginGateEl.classList.add('hidden'); loadData();
+      if(!saved || !saved.userId || !saved.sessionToken || saved.expiresAt <= Date.now()) { clearTemporarySession(); return; }
+      userId = saved.userId; sessionToken = saved.sessionToken; isGuest = false;
+      renderUserBadge(); loginGateEl.classList.add('hidden'); loadProfile(); loadData();
       clearTimeout(sessionTimer); sessionTimer = setTimeout(endSession, Math.max(0, saved.expiresAt - Date.now()));
     }catch(err){ clearTemporarySession(); }
   }
   function sanitizeUsername(raw){
     return raw.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-_.]/g, '');
+  }
+  function formatAuthError(err){
+    const code = String(err?.code || 'UNKNOWN');
+    const message = String(err?.message || '').replace(/\s+/g, ' ').trim();
+    if(message.includes('login_with_session') || code === 'PGRST202'){
+      return 'Fungsi login sesi belum terbaca oleh Supabase. Jalankan ulang migrasi v1.36, tunggu 30 detik, lalu refresh halaman.';
+    }
+    if(message.includes('session expired') || code === '28000'){
+      return 'Sesi sudah berakhir. Silakan login lagi.';
+    }
+    return 'Gagal masuk (' + code + '): ' + (message || 'Supabase tidak mengirim rincian error.');
   }
   async function doLogin(){
     const clean = sanitizeUsername(usernameInputEl.value);
@@ -1090,39 +1338,41 @@
     }
     loginBtnEl.disabled = true;
     loginBtnEl.textContent = 'Memeriksa...';
-    guestSaveStatusEl.textContent = 'Menyimpan dataâ€¦';
+    guestSaveStatusEl.textContent = 'Menyimpan data…';
     try{
-      const { data, error } = await supabaseClient.rpc('login_or_register', { p_username: clean, p_password: pass });
+      const { data, error } = await supabaseClient.rpc('login_with_session', { p_username: clean, p_password: pass });
       if(error) throw error;
-      if(data === 'wrong_password'){
+      if(!data || typeof data !== 'object') throw new Error('MIGRATION_REQUIRED');
+      if(data.status === 'wrong_password'){
         loginErrorEl.textContent = 'Password salah untuk username ini.';
         return;
       }
-      if(data === 'invalid'){
+      if(data.status === 'invalid'){
         loginErrorEl.textContent = 'Username/password tidak valid.';
         return;
       }
-      userId = clean;
-      userPassword = pass;
+      userId = data.username;
+      sessionToken = data.token;
+      passwordInputEl.value = '';
       refreshTemporarySession();
       renderUserBadge();
       // Tampilkan peringatan simpan password saat akun baru pertama kali dibuat
-      if(data === 'created' && loginPasswordWarnEl){
+      if(data.status === 'created' && loginPasswordWarnEl){
         loginPasswordWarnEl.hidden = false;
         setTimeout(() => {
           loginGateEl.classList.add('hidden');
           loginPasswordWarnEl.hidden = true;
-          loadData();
+          loadProfile(); loadData();
         }, 4000);
       } else {
         loginGateEl.classList.add('hidden');
-        loadData();
+        loadProfile(); loadData();
       }
       guestBannerEl.classList.remove('show');
       isGuest = false;
       document.body.classList.remove('guest-mode');
     }catch(err){
-      loginErrorEl.textContent = 'Gagal menghubungi database. Pastikan fungsi SQL sudah dijalankan.';
+      loginErrorEl.textContent = formatAuthError(err);
     }finally{
       loginBtnEl.disabled = false;
       loginBtnEl.textContent = 'Masuk / Daftar';
@@ -1133,7 +1383,7 @@
     document.body.classList.add('guest-mode');
     userId = null;
     renderUserBadge();
-    userPassword = null;
+    sessionToken = null;
     clearTemporarySession();
     loginGateEl.classList.add('hidden');
     guestBannerEl.classList.add('show');
@@ -1144,14 +1394,17 @@
     budget = { monthly: null, categories: {} };
     goals = [];
     recurringRules = [];
-    settings = { darkMode: true, budgetWarnPct: 70, privacyMode: false };
+    currencyRates = Object.assign({}, defaultCurrencyRates);
+    settings = { darkMode: true, budgetWarnPct: 70, privacyMode: false, viewOnlyMode: false };
     document.body.classList.add('dark');
     toggleDarkModeBtn.innerHTML = '&#9788; terang';
     renderPrivacyMode();
+    renderViewOnlyMode();
+    renderBackupReminder();
     if(budgetWarnPctInputEl) budgetWarnPctInputEl.value = 70;
     splitParticipants = [
-      { id: uid('sp_'), name: '', subtotal: '' },
-      { id: uid('sp_'), name: '', subtotal: '' }
+      { id: uid('sp_'), name: '', items: [{ id: uid('si_'), desc: '', amount: '' }] },
+      { id: uid('sp_'), name: '', items: [{ id: uid('si_'), desc: '', amount: '' }] }
     ];
     renderCatBudgetInputs();
     render();
@@ -1171,21 +1424,23 @@
     }
     guestSaveBtn.disabled = true;
     const guestSaveLabel = guestSaveBtn.textContent;
-    guestSaveBtn.textContent = 'Menyimpanâ€¦';
+    guestSaveBtn.textContent = 'Menyimpan…';
     try{
-      const { data, error } = await supabaseClient.rpc('login_or_register', { p_username: clean, p_password: pass });
+      const { data, error } = await supabaseClient.rpc('login_with_session', { p_username: clean, p_password: pass });
       if(error) throw error;
-      if(data === 'wrong_password'){
-        setFeedback('Username itu sudah dipakai dan password tidak cocok â€” coba username lain.', 'hero-feedback outcome');
+      if(!data || typeof data !== 'object') throw new Error('MIGRATION_REQUIRED');
+      if(data.status === 'wrong_password'){
+        setFeedback('Username itu sudah dipakai dan password tidak cocok — coba username lain.', 'hero-feedback outcome');
         return;
       }
-      userId = clean;
-      userPassword = pass;
+      userId = data.username;
+      sessionToken = data.token;
+      guestSavePasswordEl.value = '';
       refreshTemporarySession();
       renderUserBadge();
       isGuest = false;
       document.body.classList.remove('guest-mode');
-      const saved = [await saveAccounts(), await saveEntries(), await saveBudget(), await saveGoals(), await saveSettings()];
+      const saved = [await saveAccounts(), await saveEntries(), await saveBudget(), await saveGoals(), await saveSettings(), await saveRecurringRules(), await saveCustomCategories(), await saveCurrencyRates()];
       if(!saved.every(Boolean)) return;
       guestSaveStatusEl.textContent = '';
       guestSaveUsernameEl.value = '';
@@ -1193,8 +1448,8 @@
       guestBannerEl.classList.remove('show');
       setFeedback('Data tersimpan ke username "' + clean + '". Lain kali login dengan username & password ini.', 'hero-feedback payment');
     }catch(err){
-      guestSaveStatusEl.textContent = 'Gagal menyimpan. Coba lagi.';
-      setFeedback('Gagal menyimpan â€” coba lagi.', 'hero-feedback outcome');
+      guestSaveStatusEl.textContent = formatAuthError(err);
+      setFeedback('Gagal menyimpan: ' + formatAuthError(err), 'hero-feedback outcome');
     }finally{
       guestSaveBtn.disabled = false;
       guestSaveBtn.textContent = guestSaveLabel;
@@ -1207,7 +1462,7 @@
   guestSaveBtn.addEventListener('click', saveGuestDataAs);
   guestSavePasswordEl.addEventListener('keydown', (e) => { if(e.key === 'Enter') saveGuestDataAs(); });
 
-  // ---- Supabase connection ----
+  // ===== 3. KONEKSI SUPABASE & PERSISTENSI =====
   // Isi SUPABASE_ANON_KEY dengan anon public key dari Settings > API di dashboard Supabase kamu.
   const SUPABASE_URL = 'https://lxymyrtbdkrpbplymtrz.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx4eW15cnRiZGtycGJwbHltdHJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2MDM1MDYsImV4cCI6MjEwMDE3OTUwNn0.rNVUW5GCNxJlCqXXWbML_O45KCahA3A_eyeQeQ2L-5Y';
@@ -1223,10 +1478,6 @@
     storageAvailable = false;
   }
 
-  // Password disimpan di memori saja (tidak pernah ke browser storage), dikirim ke Supabase
-  // lewat RPC yang memverifikasi hash di server â€” bukan dicek di JavaScript.
-  let userPassword = null;
-
   const saveStatusEl = document.getElementById('saveStatus');
   let saveStatusTimer = null;
   function setSaveStatus(state){
@@ -1236,7 +1487,7 @@
     if(state === 'saving'){
       saveStatusEl.innerHTML = '<span class="dot"></span>Menyimpan...';
     } else if(state === 'saved'){
-      saveStatusEl.innerHTML = '<span class="dot"></span>Tersimpan';
+      saveStatusEl.innerHTML = '<span class="dot"></span>Tersimpan ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
       saveStatusTimer = setTimeout(() => { saveStatusEl.classList.remove('show'); }, 2500);
     } else if(state === 'error'){
       saveStatusEl.innerHTML = '<span class="dot"></span>Gagal tersimpan \u2014 coba lagi';
@@ -1245,16 +1496,16 @@
 
   async function kvGet(key){
     if(!supabaseClient) throw new Error('Supabase belum tersambung');
-    const { data, error } = await supabaseClient.rpc('kv_get', { p_username: userId, p_password: userPassword, p_key: key });
-    if(error) throw error;
+    const { data, error } = await supabaseClient.rpc('session_kv_get', { p_session_token: sessionToken, p_key: key });
+    if(error){ handleSessionError(error); throw error; }
     return data || null;
   }
   async function kvSet(key, value){
     if(!supabaseClient) throw new Error('Supabase belum tersambung');
     setSaveStatus('saving');
     try{
-      const { error } = await supabaseClient.rpc('kv_set', { p_username: userId, p_password: userPassword, p_key: key, p_value: value });
-      if(error) throw error;
+      const { error } = await supabaseClient.rpc('session_kv_set', { p_session_token: sessionToken, p_key: key, p_value: value });
+      if(error){ handleSessionError(error); throw error; }
       setSaveStatus('saved');
     }catch(err){
       setSaveStatus('error');
@@ -1262,6 +1513,49 @@
     }
   }
 
+  function handleSessionError(error){
+    const message = String(error?.message || '').toLowerCase();
+    if(error?.code === '28000' || message.includes('session expired')){
+      setTimeout(() => {
+        if(sessionToken) endSession();
+      }, 0);
+    }
+  }
+
+  async function loadProfile(){
+    if(isGuest || !supabaseClient || !sessionToken) return;
+    const { data, error } = await supabaseClient.rpc('profile_get', { p_session_token: sessionToken });
+    if(error){ handleSessionError(error); return; }
+    userProfile = data || null;
+    profileAvatarData = userProfile?.avatar_data || '';
+    profileAvatarEl.textContent = (userProfile?.display_name || userId || 'A').trim().charAt(0).toUpperCase();
+    profileAvatarEl.classList.toggle('has-photo', !!profileAvatarData);
+    profileAvatarEl.style.backgroundImage = profileAvatarData ? 'url("' + profileAvatarData + '")' : '';
+    removeProfileAvatarBtn.hidden = !profileAvatarData;
+    profileHandleEl.textContent = '@' + userId;
+    profileDisplayNameEl.value = userProfile?.display_name || '';
+    profileEmailEl.value = userProfile?.email || '';
+    profilePhoneEl.value = userProfile?.phone || '';
+    profileCityEl.value = userProfile?.city || '';
+  }
+  function setProfileFeedback(message, type = 'payment'){
+    profileFeedbackEl.textContent = message;
+    profileFeedbackEl.className = 'hero-feedback show hero-feedback ' + type;
+  }
+  async function touchSession(){
+    if(isGuest || !sessionToken || !supabaseClient) return;
+    const { data, error } = await supabaseClient.rpc('session_touch', { p_session_token: sessionToken });
+    if(error){ handleSessionError(error); return; }
+    if(!data?.expires_at) return;
+    const expiresAt = new Date(data.expires_at).getTime();
+    if(Number.isFinite(expiresAt)){
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify({ userId, sessionToken, expiresAt }));
+      clearTimeout(sessionTimer);
+      sessionTimer = setTimeout(endSession, Math.max(0, expiresAt - Date.now()));
+    }
+  }
+
+  // ===== 4. PARSER TRANSAKSI & DATA DOMAIN =====
   const incomeKeywords = ['gaji','terima','diterima','dapat','masuk','bonus','jual','terjual','freelance','untung','cashback','refund','honor','thr','transfer masuk','dividen','hadiah'];
   const paymentKeywords = ['bayar tagihan','bayar kartu kredit','bayar cc','bayar kredit','lunasi kartu kredit','lunasi tagihan','bayar tagihan kartu kredit'];
   const savingKeywords = ['nabung','tabung','sisihkan','alokasikan','alokasi','setor tabungan','setor dana'];
@@ -1320,19 +1614,37 @@
   }
 
   function formatRupiah(n){
-    if(settings.privacyMode) return '••••••';
     const sign = n < 0 ? '-' : '';
     const abs = Math.abs(Math.round(n));
     return sign + 'Rp ' + abs.toLocaleString('id-ID');
   }
 
+  // ===== 5. RENDER DASHBOARD, LAPORAN, DAN VISUAL =====
   function renderPrivacyMode(){
     if(!togglePrivacyModeBtn) return;
     const hidden = !!settings.privacyMode;
     document.body.classList.toggle('privacy-mode', hidden);
     togglePrivacyModeBtn.innerHTML = hidden ? '&#9688; tampilkan' : '&#9689; privasi';
     togglePrivacyModeBtn.setAttribute('aria-pressed', String(hidden));
-    togglePrivacyModeBtn.title = hidden ? 'Tampilkan nominal' : 'Sembunyikan nominal';
+    togglePrivacyModeBtn.title = hidden ? 'Tampilkan saldo bersih' : 'Sembunyikan saldo bersih';
+  }
+
+  function renderViewOnlyMode(){
+    if(!toggleViewOnlyBtn) return;
+    const locked = !!settings.viewOnlyMode;
+    document.body.classList.toggle('view-only', locked);
+    toggleViewOnlyBtn.innerHTML = locked ? '&#9673; terkunci' : '&#9673; hanya lihat';
+    toggleViewOnlyBtn.setAttribute('aria-pressed', String(locked));
+    toggleViewOnlyBtn.title = locked ? 'Matikan Mode Hanya Lihat' : 'Kunci sementara supaya data tidak bisa diedit/dihapus';
+    if(viewOnlyBannerEl) viewOnlyBannerEl.hidden = !locked;
+    if(inputEl){ inputEl.disabled = locked; inputEl.placeholder = locked ? 'Mode Hanya Lihat aktif \u2014 input dikunci' : 'Ketik transaksi... contoh: beli kopi 25000'; }
+    if(sendBtn) sendBtn.disabled = locked;
+  }
+
+  function blockIfViewOnly(){
+    if(!settings.viewOnlyMode) return false;
+    setFeedback('Mode Hanya Lihat aktif \u2014 matikan dulu di pojok atas untuk mengedit.', 'hero-feedback outcome');
+    return true;
   }
 
   function fitTextToBox(el){
@@ -1630,7 +1942,7 @@
         const locked = document.createElement('span');
         locked.className = 'locked-tag';
         locked.title = 'Akun kartu kredit dikunci, tidak bisa dihapus';
-        locked.textContent = '\ud83d\udd12 Terkunci';
+        locked.textContent = '\u26bf Terkunci';
         row.appendChild(locked);
       } else {
         const remove = document.createElement('button');
@@ -1655,6 +1967,25 @@
 
   function getAnalyticsEntries(){
     return entries.filter(e => e && !e.isAdjustment && Number.isFinite(Number(e.amount)) && Number.isFinite(new Date(e.ts).getTime()));
+  }
+
+  function computeNoSpendStreak(){
+    const analytics = getAnalyticsEntries();
+    if(analytics.length === 0) return 0;
+    const dayKey = (d) => d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
+    const outcomeDays = new Set(analytics.filter(e => e.type === 'outcome').map(e => dayKey(new Date(e.ts))));
+    const earliestTs = Math.min(...analytics.map(e => e.ts));
+    let streak = 0;
+    let cursor = new Date();
+    cursor.setHours(0,0,0,0);
+    let safetyCounter = 0;
+    while(cursor.getTime() >= earliestTs && safetyCounter < 3650){
+      if(outcomeDays.has(dayKey(cursor))) break;
+      streak++;
+      cursor.setDate(cursor.getDate() - 1);
+      safetyCounter++;
+    }
+    return streak;
   }
 
   function computeMonthlySpending(){
@@ -1708,18 +2039,18 @@
       if(ratio >= 1){ statusClass = 'over'; statusText = 'Melebihi Anggaran'; }
       else if(ratio >= warnRatio){ statusClass = 'warn'; statusText = 'Waspada'; }
 
-      html += `<div class="ai-status ${statusClass}">${statusText} â€” ${pct}% anggaran terpakai</div>`;
+      html += `<div class="ai-status ${statusClass}">${statusText} — ${pct}% anggaran terpakai</div>`;
       html += `<div class="bar-track"><div class="bar-fill ${statusClass}" style="width:${pct}%"></div></div>`;
       html += `<div class="ai-line">Terpakai <span class="num">${formatRupiah(total)}</span> dari <span class="num">${formatRupiah(monthlyBudget)}</span>.</div>`;
 
       if(statusClass === 'over'){
         html += `<div class="ai-line">Sudah lebih <span class="num">${formatRupiah(Math.abs(remaining))}</span> dari anggaran bulan ini.</div>`;
-        if(topCat) html += `<div class="ai-line">Porsi terbesar ada di <span class="num">${escapeHtml(topCat)}</span> (${formatRupiah(topAmt)}) â€” coba kurangi ini dulu bulan depan.</div>`;
+        if(topCat) html += `<div class="ai-line">Porsi terbesar ada di <span class="num">${escapeHtml(topCat)}</span> (${formatRupiah(topAmt)}) — coba kurangi ini dulu bulan depan.</div>`;
       } else if(statusClass === 'warn'){
         html += `<div class="ai-line">Sisa <span class="num">${formatRupiah(remaining)}</span> untuk ${daysLeft} hari lagi (\u2248 ${formatRupiah(dailyAllowance)}/hari kalau mau pas anggaran).</div>`;
         if(topCat) html += `<div class="ai-line">Perhatikan kategori <span class="num">${escapeHtml(topCat)}</span>, itu porsi pengeluaran terbesar sejauh ini.</div>`;
         if(projected > monthlyBudget){
-          html += `<div class="ai-line">Kalau ritme belanja terus begini, proyeksi akhir bulan sekitar <span class="num">${formatRupiah(projected)}</span> â€” bisa lewat anggaran.</div>`;
+          html += `<div class="ai-line">Kalau ritme belanja terus begini, proyeksi akhir bulan sekitar <span class="num">${formatRupiah(projected)}</span> — bisa lewat anggaran.</div>`;
         }
       } else {
         html += `<div class="ai-line">Masih terkendali. Sisa <span class="num">${formatRupiah(remaining)}</span> untuk ${daysLeft} hari lagi.</div>`;
@@ -1797,7 +2128,7 @@
     const goalsSaved = computeGoalsSaved();
     goalsListEl.innerHTML = '';
     if(goals.length === 0){
-      goalsListEl.innerHTML = '<div class="goals-empty"><span class="empty-icon">&#127919;</span>Belum ada rencana dana. Tambah tujuan seperti "Dana Darurat" atau "Dana Haji" lewat tombol Kelola.</div>';
+      goalsListEl.innerHTML = '<div class="goals-empty"><span class="empty-icon">&#9678;</span>Belum ada rencana dana. Tambah tujuan seperti "Dana Darurat" atau "Dana Haji" lewat tombol Kelola.</div>';
       return;
     }
     goals.forEach(g => {
@@ -1932,7 +2263,69 @@
     }
   }
 
+  async function saveCurrencyRates(){
+    if(isGuest) return true;
+    try{ await kvSet(CURRENCY_RATES_KEY, currencyRates); return true; }
+    catch(err){
+      console.error('Gagal menyimpan kurs:', err);
+      setFeedback('Gagal menyimpan kurs. Periksa koneksi lalu coba lagi.', 'hero-feedback outcome');
+      return false;
+    }
+  }
+
+  function populateCurrencySelects(){
+    if(!currencyFromSelectEl || !currencyToSelectEl) return;
+    const optionsHtml = currencyList.map(c => `<option value="${c.code}">${escapeHtml(c.label)}</option>`).join('');
+    currencyFromSelectEl.innerHTML = optionsHtml;
+    currencyToSelectEl.innerHTML = optionsHtml;
+    currencyFromSelectEl.value = 'USD';
+    currencyToSelectEl.value = 'IDR';
+  }
+
+  function renderCurrencyRatesForm(){
+    if(!currencyRatesListEl) return;
+    currencyRatesListEl.innerHTML = '';
+    let lastGroup = null;
+    currencyList.forEach(c => {
+      if(c.code === 'IDR') return;
+      if(c.group !== lastGroup){
+        const groupLabel = document.createElement('div');
+        groupLabel.className = 'currency-group-label';
+        groupLabel.textContent = c.group;
+        currencyRatesListEl.appendChild(groupLabel);
+        lastGroup = c.group;
+      }
+      const row = document.createElement('div');
+      row.className = 'currency-rate-row';
+      const label = document.createElement('span');
+      label.textContent = c.label;
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.min = '0';
+      input.dataset.code = c.code;
+      input.value = String(currencyRates[c.code] != null ? currencyRates[c.code] : '');
+      row.append(label, input);
+      currencyRatesListEl.appendChild(row);
+    });
+  }
+
+  function computeCurrencyConversion(){
+    if(!currencyAmountInputEl || !currencyFromSelectEl || !currencyToSelectEl || !currencyResultEl) return;
+    const amount = parseFloat(currencyAmountInputEl.value) || 0;
+    const fromCode = currencyFromSelectEl.value;
+    const toCode = currencyToSelectEl.value;
+    const fromRate = currencyRates[fromCode] || 0;
+    const toRate = currencyRates[toCode] || 0;
+    if(toRate <= 0){ currencyResultEl.textContent = '\u2014'; return; }
+    const amountInIdr = amount * fromRate;
+    const result = amountInIdr / toRate;
+    const decimals = ['IDR','JPY','KRW'].includes(toCode) ? 0 : (toCode === 'BTC' || toCode === 'ETH' ? 8 : 2);
+    const formatted = result.toLocaleString('id-ID', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+    currencyResultEl.textContent = formatted + ' ' + toCode;
+  }
+
   async function addRecurringRule(){
+    if(blockIfViewOnly()) return;
     const desc = newRecurringDescEl.value.trim();
     const amount = Number(newRecurringAmountEl.value);
     const category = newRecurringCategoryEl.value.trim();
@@ -2312,7 +2705,7 @@
       listEl.appendChild(emptyEl);
       emptyEl.style.display = 'block';
     } else if(filtered.length === 0){
-      listEl.innerHTML = '<div class="empty"><span class="empty-icon">&#128269;</span>Tidak ada transaksi yang cocok dengan filter/pencarian ini.</div>';
+      listEl.innerHTML = '<div class="empty"><span class="empty-icon">&#8998;</span>Tidak ada transaksi yang cocok dengan filter/pencarian ini.</div>';
     } else {
       emptyEl.style.display = 'none';
       listEl.innerHTML = '';
@@ -2348,7 +2741,7 @@
         if(e.type === 'withdraw_goal' && goalObj) accLabel = goalObj.name + ' \u2192 ' + accName;
         const sign = (e.type === 'outcome' || e.type === 'saving') ? '-' : ((e.type === 'payment' || e.type === 'transfer') ? '\u2212' : '+');
         const mutationHtml = runningMap ? `<div class="meta" style="margin-top:2px;">Saldo: ${formatRupiah(runningMap[e.id])}</div>` : '';
-        const recurringTagHtml = e.recurringRuleId ? '<span class="tag recurring-tag" title="Dicatat dari Transaksi Berulang">&#128257; Berulang</span>' : '';
+        const recurringTagHtml = e.recurringRuleId ? '<span class="tag recurring-tag" title="Dicatat dari Transaksi Berulang">&#10227; Berulang</span>' : '';
         row.innerHTML = `
           <div>
             <div class="desc">${escapeHtml(e.desc)}</div>
@@ -2384,7 +2777,8 @@
     totalBalanceEl.textContent = formatRupiah(netWorth);
     renderCreditCardOverview(balances);
     const netWorthClass = netWorth < 0 ? 'negative' : (netWorth > 0 ? 'positive' : '');
-    balanceStampEl.innerHTML = '<span class="stamp-tag">Saldo</span><span class="stamp-amount ' + netWorthClass + '">' + formatRupiah(netWorth) + '</span>';
+    const privateBalance = settings.privacyMode ? '&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;' : formatRupiah(netWorth);
+    balanceStampEl.innerHTML = '<span class="stamp-tag">Saldo</span><span class="stamp-amount ' + netWorthClass + '">' + privateBalance + '</span>';
 
     const totalCreditLimit = accounts.filter(a => a.type === 'credit' && Number.isFinite(a.creditLimit) && a.creditLimit > 0).reduce((s,a) => s + a.creditLimit, 0);
     if(mainBalanceValueEl) mainBalanceValueEl.textContent = formatRupiah(totalWallet);
@@ -2408,6 +2802,7 @@
     qsTransaksiEl.textContent = entries.length;
     qsAkunEl.textContent = accounts.length;
     qsTujuanEl.textContent = goals.length;
+    if(qsStreakEl) qsStreakEl.textContent = computeNoSpendStreak();
     renderRecurringReminder();
     renderCashflowCalendar();
     try{
@@ -2505,19 +2900,28 @@
 
   async function loadData(){
     setDashboardLoading(true);
+    const loadIssues = [];
+    const noteLoadIssue = (key, err) => {
+      const code = String(err?.code || 'UNKNOWN');
+      const message = String(err?.message || '').replace(/\s+/g, ' ').trim();
+      loadIssues.push(key + ' (' + code + (message ? ': ' + message.slice(0, 100) : '') + ')');
+      console.error('Gagal memuat data kunci "' + key + '":', err);
+    };
+    try{
     try{
       const accResult = await kvGet(ACC_KEY);
       accounts = accResult && accResult.length ? accResult : defaultAccounts();
     }catch(err){
+      noteLoadIssue(ACC_KEY, err);
       accounts = defaultAccounts();
     }
     if(!accounts || accounts.length === 0) accounts = defaultAccounts();
-    await saveAccounts();
 
     try{
       const entResult = await kvGet(ENTRY_KEY);
       entries = Array.isArray(entResult) ? entResult : [];
     }catch(err){
+      noteLoadIssue(ENTRY_KEY, err);
       entries = [];
     }
     const fallbackWallet = accounts.find(a => a.type === 'wallet') || accounts[0];
@@ -2542,6 +2946,13 @@
     }
 
     try{
+      const ratesResult = await kvGet(CURRENCY_RATES_KEY);
+      currencyRates = (ratesResult && typeof ratesResult === 'object') ? Object.assign({}, defaultCurrencyRates, ratesResult) : Object.assign({}, defaultCurrencyRates);
+    }catch(err){
+      currencyRates = Object.assign({}, defaultCurrencyRates);
+    }
+
+    try{
       const goalsResult = await kvGet(GOALS_KEY);
       goals = Array.isArray(goalsResult) ? goalsResult : [];
     }catch(err){
@@ -2556,35 +2967,51 @@
     }
     let recurringMigrated = false;
     recurringRules.forEach(rule => {
-      while(isRuleAlreadyRecorded(rule)){
+      let safetyCounter = 0;
+      while(isRuleAlreadyRecorded(rule) && safetyCounter < 240){
         rule.nextDue = advanceMonthlyDue(rule.nextDue);
         recurringMigrated = true;
+        safetyCounter++;
       }
     });
     if(recurringMigrated) await saveRecurringRules();
 
     try{
       const settingsResult = await kvGet(SETTINGS_KEY);
-      settings = settingsResult && typeof settingsResult === 'object' ? Object.assign({ darkMode: true, budgetWarnPct: 70, privacyMode: false }, settingsResult) : { darkMode: true, budgetWarnPct: 70, privacyMode: false };
+      settings = settingsResult && typeof settingsResult === 'object' ? Object.assign({ darkMode: true, budgetWarnPct: 70, privacyMode: false, viewOnlyMode: false }, settingsResult) : { darkMode: true, budgetWarnPct: 70, privacyMode: false, viewOnlyMode: false };
     }catch(err){
-      settings = { darkMode: true, budgetWarnPct: 70, privacyMode: false };
+      settings = { darkMode: true, budgetWarnPct: 70, privacyMode: false, viewOnlyMode: false };
     }
     document.body.classList.toggle('dark', !!settings.darkMode);
     toggleDarkModeBtn.innerHTML = settings.darkMode ? '&#9788; terang' : '&#9789; gelap';
     renderPrivacyMode();
+    renderViewOnlyMode();
     if(budgetWarnPctInputEl) budgetWarnPctInputEl.value = settings.budgetWarnPct;
 
     splitParticipants = [
-      { id: uid('sp_'), name: '', subtotal: '' },
-      { id: uid('sp_'), name: '', subtotal: '' }
+      { id: uid('sp_'), name: '', items: [{ id: uid('si_'), desc: '', amount: '' }] },
+      { id: uid('sp_'), name: '', items: [{ id: uid('si_'), desc: '', amount: '' }] }
     ];
 
-    renderCatBudgetInputs();
-    renderCustomCategories();
-    render();
-    renderSplitParticipants();
-    renderSplitBreakdown();
-    setDashboardLoading(false);
+    try{
+      renderCatBudgetInputs();
+      renderCustomCategories();
+      render();
+      renderSplitParticipants();
+      renderSplitBreakdown();
+      if(loadIssues.length){
+        setFeedback('Sebagian data belum terbaca: ' + loadIssues.join(' | '), 'hero-feedback outcome');
+      }
+    }catch(err){
+      console.error('Gagal menampilkan dashboard:', err);
+      setFeedback('Sebagian tampilan gagal dimuat. Coba refresh halaman.', 'hero-feedback outcome');
+    }
+    }catch(fatalErr){
+      console.error('loadData gagal total:', fatalErr);
+      setFeedback('Gagal memuat data. Periksa koneksi lalu refresh halaman.', 'hero-feedback outcome');
+    }finally{
+      setDashboardLoading(false);
+    }
   }
 
   let feedbackTimer = null;
@@ -2935,65 +3362,129 @@
     render();
   }
 
-  // ---- Split Bill ----
+  // ===== 6. FITUR TERPISAH: SPLIT BILL, CADANGAN, DAN IMPOR =====
   function renderSplitParticipants(){
     splitParticipantsListEl.innerHTML = '';
     splitParticipants.forEach((p, idx) => {
-      const row = document.createElement('div');
-      row.className = 'split-row';
+      if(!Array.isArray(p.items) || p.items.length === 0){
+        p.items = [{ id: uid('si_'), desc: '', amount: '' }];
+      }
+      const person = document.createElement('div');
+      person.className = 'split-person';
+      person.dataset.personId = String(p.id);
+
+      const header = document.createElement('div');
+      header.className = 'split-person-header';
       const nameInput = document.createElement('input');
       nameInput.type = 'text';
       nameInput.className = 'split-name';
       nameInput.dataset.id = String(p.id);
       nameInput.value = String(p.name || '');
       nameInput.placeholder = 'Nama orang ' + (idx + 1);
-      const amountInput = document.createElement('input');
-      amountInput.type = 'number';
-      amountInput.className = 'split-amt';
-      amountInput.dataset.id = String(p.id);
-      amountInput.value = String(p.subtotal || '');
-      amountInput.placeholder = 'Subtotal Rp';
-      amountInput.min = '0';
-      const remove = document.createElement('button');
-      remove.className = 'del-btn split-del';
-      remove.dataset.id = String(p.id);
-      remove.textContent = 'HAPUS';
-      row.append(nameInput, amountInput, remove);
-      splitParticipantsListEl.appendChild(row);
+      const removePerson = document.createElement('button');
+      removePerson.className = 'split-del-person';
+      removePerson.dataset.id = String(p.id);
+      removePerson.textContent = 'Hapus Orang';
+      header.append(nameInput, removePerson);
+      person.appendChild(header);
+
+      p.items.forEach((item) => {
+        const itemRow = document.createElement('div');
+        itemRow.className = 'split-item-row';
+        itemRow.dataset.personId = String(p.id);
+        itemRow.dataset.itemId = String(item.id);
+        const descInput = document.createElement('input');
+        descInput.type = 'text';
+        descInput.className = 'split-item-desc';
+        descInput.value = String(item.desc || '');
+        descInput.placeholder = 'Item, contoh: Sosis';
+        const amountInput = document.createElement('input');
+        amountInput.type = 'number';
+        amountInput.className = 'split-item-amount';
+        amountInput.value = String(item.amount || '');
+        amountInput.placeholder = 'Harga';
+        amountInput.min = '0';
+        const removeItem = document.createElement('button');
+        removeItem.className = 'split-item-del';
+        removeItem.textContent = '\u00d7';
+        removeItem.title = 'Hapus item ini';
+        itemRow.append(descInput, amountInput, removeItem);
+        person.appendChild(itemRow);
+      });
+
+      const addItemBtn = document.createElement('button');
+      addItemBtn.className = 'split-add-item-btn';
+      addItemBtn.dataset.id = String(p.id);
+      addItemBtn.textContent = '+ Tambah Item';
+      person.appendChild(addItemBtn);
+
+      splitParticipantsListEl.appendChild(person);
     });
   }
 
   function computeSplit(){
     const taxPct = parseFloat(taxPctInputEl.value) || 0;
     const servicePct = parseFloat(servicePctInputEl.value) || 0;
-    const subtotalSum = splitParticipants.reduce((s,p) => s + (parseFloat(p.subtotal) || 0), 0);
-    const taxAmt = subtotalSum * taxPct / 100;
-    const serviceAmt = subtotalSum * servicePct / 100;
-    const grandTotal = subtotalSum + taxAmt + serviceAmt;
-    const shares = splitParticipants.map(p => {
-      const sub = parseFloat(p.subtotal) || 0;
-      const ratio = subtotalSum > 0 ? sub / subtotalSum : 0;
+    const discountVal = Math.max(0, parseFloat(discountValInputEl.value) || 0);
+    const discountType = discountTypeInputEl.value === 'flat' ? 'flat' : 'percent';
+
+    const people = splitParticipants.map(p => {
+      const items = Array.isArray(p.items) ? p.items : [];
+      const sub = items.reduce((s, it) => s + (parseFloat(it.amount) || 0), 0);
+      return { id: p.id, name: (p.name || '').trim() || 'Tanpa nama', items, sub };
+    });
+    const subtotalSum = people.reduce((s,p) => s + p.sub, 0);
+
+    const discountAmount = subtotalSum <= 0 ? 0
+      : discountType === 'flat' ? Math.min(discountVal, subtotalSum)
+      : subtotalSum * (discountVal / 100);
+
+    const discountedSubtotal = subtotalSum - discountAmount;
+    const taxAmt = discountedSubtotal * taxPct / 100;
+    const serviceAmt = discountedSubtotal * servicePct / 100;
+    const grandTotal = discountedSubtotal + taxAmt + serviceAmt;
+
+    const shares = people.map(p => {
+      const ratio = subtotalSum > 0 ? p.sub / subtotalSum : 0;
+      const theirDiscount = discountAmount * ratio;
       const theirTax = taxAmt * ratio;
       const theirService = serviceAmt * ratio;
-      return { name: p.name.trim() || 'Tanpa nama', sub, tax: theirTax, service: theirService, total: sub + theirTax + theirService };
+      const total = (p.sub - theirDiscount) + theirTax + theirService;
+      return { name: p.name, items: p.items, sub: p.sub, discount: theirDiscount, tax: theirTax, service: theirService, total };
     });
-    return { subtotalSum, taxAmt, serviceAmt, grandTotal, shares, taxPct, servicePct };
+
+    return { subtotalSum, discountAmount, discountType, discountVal, taxAmt, serviceAmt, grandTotal, shares, taxPct, servicePct };
   }
 
   function renderSplitBreakdown(){
     const r = computeSplit();
     let html = '';
     r.shares.forEach(s => {
-      html += `<div class="sb-person"><span>${escapeHtml(s.name)}<div class="sb-detail">Subtotal ${formatRupiah(s.sub)} + pajak/service ${formatRupiah(s.tax + s.service)}</div></span><span>${formatRupiah(s.total)}</span></div>`;
+      const itemsText = (s.items || [])
+        .filter(it => (it.desc || '').trim() || parseFloat(it.amount) > 0)
+        .map(it => escapeHtml((it.desc || 'item').trim() || 'item') + ' ' + formatRupiah(parseFloat(it.amount) || 0))
+        .join(', ');
+      html += `<div class="sb-person"><span>${escapeHtml(s.name)}${itemsText ? `<div class="sb-items">${itemsText}</div>` : ''}<div class="sb-detail">Subtotal ${formatRupiah(s.sub)}${s.discount > 0 ? ' \u2212 diskon ' + formatRupiah(s.discount) : ''} + pajak/service ${formatRupiah(s.tax + s.service)}</div></span><span>${formatRupiah(s.total)}</span></div>`;
     });
-    html += `<div class="sb-total"><span>Total (${formatRupiah(r.subtotalSum)} + pajak ${r.taxPct}% + service ${r.servicePct}%)</span><span>${formatRupiah(r.grandTotal)}</span></div>`;
+    if(r.discountAmount > 0){
+      const discLabel = r.discountType === 'flat' ? formatRupiah(r.discountVal) : r.discountVal + '%';
+      html += `<div class="sb-discount"><span>Diskon (${discLabel})</span><span>\u2212 ${formatRupiah(r.discountAmount)}</span></div>`;
+    }
+    html += `<div class="sb-total"><span>Total (${formatRupiah(r.subtotalSum)}${r.discountAmount > 0 ? ' \u2212 diskon' : ''} + pajak ${r.taxPct}% + service ${r.servicePct}%)</span><span>${formatRupiah(r.grandTotal)}</span></div>`;
     splitBreakdownEl.innerHTML = html;
 
     let pr = `<div class="pr-title">IOT SPLIT BILL</div><div class="pr-sub">${new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}</div><div class="pr-line"></div>`;
     r.shares.forEach(s => {
       pr += `<div class="pr-row"><span>${escapeHtml(s.name)}</span><span>${formatRupiah(s.total)}</span></div>`;
+      (s.items || []).filter(it => (it.desc || '').trim() || parseFloat(it.amount) > 0).forEach(it => {
+        pr += `<div class="pr-row" style="padding-left:10px;font-size:10px;"><span>${escapeHtml((it.desc || 'item').trim() || 'item')}</span><span>${formatRupiah(parseFloat(it.amount) || 0)}</span></div>`;
+      });
     });
     pr += `<div class="pr-line"></div><div class="pr-row"><span>Subtotal</span><span>${formatRupiah(r.subtotalSum)}</span></div>`;
+    if(r.discountAmount > 0){
+      const discLabel = r.discountType === 'flat' ? formatRupiah(r.discountVal) : r.discountVal + '%';
+      pr += `<div class="pr-row"><span>Diskon (${discLabel})</span><span>\u2212 ${formatRupiah(r.discountAmount)}</span></div>`;
+    }
     pr += `<div class="pr-row"><span>Pajak (${r.taxPct}%)</span><span>${formatRupiah(r.taxAmt)}</span></div>`;
     pr += `<div class="pr-row"><span>Service (${r.servicePct}%)</span><span>${formatRupiah(r.serviceAmt)}</span></div>`;
     pr += `<div class="pr-line"></div><div class="pr-row pr-total"><span>TOTAL</span><span>${formatRupiah(r.grandTotal)}</span></div>`;
@@ -3001,32 +3492,62 @@
   }
 
   addParticipantBtn.addEventListener('click', () => {
-    splitParticipants.push({ id: uid('sp_'), name: '', subtotal: '' });
+    if(blockIfViewOnly()) return;
+    splitParticipants.push({ id: uid('sp_'), name: '', items: [{ id: uid('si_'), desc: '', amount: '' }] });
     renderSplitParticipants();
     renderSplitBreakdown();
   });
 
   splitParticipantsListEl.addEventListener('input', (e) => {
-    const id = e.target.getAttribute('data-id');
-    if(!id) return;
-    const p = splitParticipants.find(x => x.id === id);
-    if(!p) return;
-    if(e.target.classList.contains('split-name')) p.name = e.target.value;
-    if(e.target.classList.contains('split-amt')) p.subtotal = e.target.value;
+    const t = e.target;
+    if(t.classList.contains('split-name')){
+      const p = splitParticipants.find(x => x.id === t.dataset.id);
+      if(p) p.name = t.value;
+    } else if(t.classList.contains('split-item-desc') || t.classList.contains('split-item-amount')){
+      const row = t.closest('.split-item-row');
+      if(!row) return;
+      const p = splitParticipants.find(x => x.id === row.dataset.personId);
+      const item = p && p.items.find(it => it.id === row.dataset.itemId);
+      if(!item) return;
+      if(t.classList.contains('split-item-desc')) item.desc = t.value;
+      else item.amount = t.value;
+    } else {
+      return;
+    }
     renderSplitBreakdown();
   });
 
   splitParticipantsListEl.addEventListener('click', (e) => {
-    const btn = e.target.closest('.split-del');
-    if(!btn) return;
-    const id = btn.getAttribute('data-id');
-    splitParticipants = splitParticipants.filter(p => p.id !== id);
-    renderSplitParticipants();
-    renderSplitBreakdown();
+    const delPerson = e.target.closest('.split-del-person');
+    const addItem = e.target.closest('.split-add-item-btn');
+    const delItem = e.target.closest('.split-item-del');
+    if(delPerson){
+      splitParticipants = splitParticipants.filter(p => p.id !== delPerson.dataset.id);
+      renderSplitParticipants();
+      renderSplitBreakdown();
+    } else if(addItem){
+      const p = splitParticipants.find(x => x.id === addItem.dataset.id);
+      if(p){
+        p.items.push({ id: uid('si_'), desc: '', amount: '' });
+        renderSplitParticipants();
+        renderSplitBreakdown();
+      }
+    } else if(delItem){
+      const row = delItem.closest('.split-item-row');
+      if(!row) return;
+      const p = splitParticipants.find(x => x.id === row.dataset.personId);
+      if(p && p.items.length > 1){
+        p.items = p.items.filter(it => it.id !== row.dataset.itemId);
+        renderSplitParticipants();
+        renderSplitBreakdown();
+      }
+    }
   });
 
   taxPctInputEl.addEventListener('input', renderSplitBreakdown);
   servicePctInputEl.addEventListener('input', renderSplitBreakdown);
+  discountValInputEl.addEventListener('input', renderSplitBreakdown);
+  discountTypeInputEl.addEventListener('change', renderSplitBreakdown);
 
   printSplitBtn.addEventListener('click', () => {
     printReceiptEl.classList.add('active');
@@ -3044,6 +3565,7 @@
   }
 
   recordSplitBtn.addEventListener('click', () => {
+    if(blockIfViewOnly()) return;
     const r = computeSplit();
     if(r.grandTotal <= 0){
       setFeedback('Isi dulu subtotal split bill sebelum dicatat.', 'hero-feedback outcome');
@@ -3060,9 +3582,9 @@
     openClarify('Split bill ini dibayar pakai akun apa?', accounts);
   });
 
-  // ---- Export / Import backup ----
+  // ---- Cadangan / impor ----
   function exportData(){
-    const payload = { accounts, entries, budget, goals, recurringRules, customCategories, exportedAt: new Date().toISOString(), appVersion: 'v1.23' };
+    const payload = { accounts, entries, budget, goals, recurringRules, customCategories, currencyRates, exportedAt: new Date().toISOString(), appVersion: 'v1.37' };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -3072,6 +3594,18 @@
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+    settings.lastBackupAt = Date.now();
+    saveSettings();
+    renderBackupReminder();
+  }
+  function renderBackupReminder(){
+    if(!backupReminderEl) return;
+    const lastBackup = Number(settings.lastBackupAt || 0);
+    const dueByAge = !lastBackup || Date.now() - lastBackup > 30 * 24 * 60 * 60 * 1000;
+    const dueByEntries = entries.length >= 20 && (!lastBackup || entries.some(e => e.ts > lastBackup));
+    backupReminderEl.textContent = dueByAge || dueByEntries
+      ? 'Disarankan ekspor cadangan JSON sekarang, terutama setelah menambah data penting.'
+      : 'Cadangan terakhir: ' + new Date(lastBackup).toLocaleDateString('id-ID') + '. Data Supabase tetap tersimpan otomatis.';
   }
 
   function validateImportPayload(payload){
@@ -3153,6 +3687,18 @@
       }
     }
 
+    if(payload.currencyRates !== undefined){
+      if(!payload.currencyRates || typeof payload.currencyRates !== 'object'){
+        errors.push('Data "currencyRates" formatnya tidak valid.');
+      } else {
+        Object.entries(payload.currencyRates).forEach(([code, val]) => {
+          if(typeof val !== 'number' || !Number.isFinite(val) || val <= 0){
+            errors.push('Kurs untuk ' + code + ' formatnya tidak valid.');
+          }
+        });
+      }
+    }
+
     return errors;
   }
 
@@ -3177,7 +3723,7 @@
       }
       const ok = window.confirm('Impor data ini akan menimpa data yang ada sekarang. Lanjutkan?');
       if(!ok) return;
-      const previousState = { accounts, entries, budget, goals, recurringRules, customCategories };
+      const previousState = { accounts, entries, budget, goals, recurringRules, customCategories, currencyRates };
       accounts = Array.isArray(payload.accounts) && payload.accounts.length ? payload.accounts : defaultAccounts();
       entries = Array.isArray(payload.entries) ? payload.entries : [];
       budget = payload.budget && typeof payload.budget === 'object' ? payload.budget : { monthly: null, categories: {} };
@@ -3185,7 +3731,8 @@
       goals = Array.isArray(payload.goals) ? payload.goals : [];
       recurringRules = Array.isArray(payload.recurringRules) ? payload.recurringRules : [];
       customCategories = normalizeCustomCategories(payload.customCategories);
-      const saved = await Promise.all([saveAccounts(), saveEntries(), saveBudget(), saveGoals(), saveRecurringRules(), saveCustomCategories()]);
+      currencyRates = payload.currencyRates && typeof payload.currencyRates === 'object' ? Object.assign({}, defaultCurrencyRates, payload.currencyRates) : Object.assign({}, defaultCurrencyRates);
+      const saved = await Promise.all([saveAccounts(), saveEntries(), saveBudget(), saveGoals(), saveRecurringRules(), saveCustomCategories(), saveCurrencyRates()]);
       if(!saved.every(Boolean)){
         accounts = previousState.accounts;
         entries = previousState.entries;
@@ -3193,7 +3740,8 @@
         goals = previousState.goals;
         recurringRules = previousState.recurringRules;
         customCategories = previousState.customCategories;
-        await Promise.all([saveAccounts(), saveEntries(), saveBudget(), saveGoals(), saveRecurringRules(), saveCustomCategories()]);
+        currencyRates = previousState.currencyRates;
+        await Promise.all([saveAccounts(), saveEntries(), saveBudget(), saveGoals(), saveRecurringRules(), saveCustomCategories(), saveCurrencyRates()]);
         renderCatBudgetInputs();
         renderCustomCategories();
         render();
@@ -3208,6 +3756,7 @@
     reader.readAsText(file);
   }
 
+  // ===== 7. EVENT UI & INISIALISASI =====
   inputEl.addEventListener('keydown', (e) => {
     if(e.key === 'Enter'){
       const val = inputEl.value;
@@ -3222,6 +3771,7 @@
   listEl.addEventListener('click', (e) => {
     const btn = e.target.closest('.void-btn');
     if(!btn) return;
+    if(blockIfViewOnly()) return;
     const id = btn.getAttribute('data-id');
     const action = btn.getAttribute('data-action');
     if(action === 'edit') openEditEntry(id);
@@ -3263,6 +3813,12 @@
     render();
     saveSettings();
   });
+  toggleViewOnlyBtn.addEventListener('click', () => {
+    settings.viewOnlyMode = !settings.viewOnlyMode;
+    renderViewOnlyMode();
+    saveSettings();
+    setFeedback(settings.viewOnlyMode ? 'Mode Hanya Lihat diaktifkan.' : 'Mode Hanya Lihat dimatikan.', 'hero-feedback payment');
+  });
   toggleDataBtn.addEventListener('click', () => { dataPanelEl.classList.toggle('open'); });
   toggleBudgetBtn.addEventListener('click', () => { budgetPanelEl.classList.toggle('open'); });
   toggleMenuBtn.addEventListener('click', (e) => {
@@ -3279,19 +3835,35 @@
     if(which === 'goals') openModal(goalsModalOverlayEl, toggleMenuBtn);
     if(which === 'recurring') openModal(recurringModalOverlayEl, toggleMenuBtn);
     if(which === 'split') openModal(splitModalOverlayEl, toggleMenuBtn);
+    if(which === 'currency'){
+      populateCurrencySelects();
+      renderCurrencyRatesForm();
+      computeCurrencyConversion();
+      openModal(currencyModalOverlayEl, toggleMenuBtn);
+    }
+    if(which === 'profile'){
+      if(isGuest){ setFeedback('Profil tersedia setelah Anda masuk dengan username.', 'hero-feedback outcome'); return; }
+      loadProfile();
+      openModal(profileModalOverlayEl, toggleMenuBtn);
+    }
     if(which === 'switch'){
       const ok = window.confirm('Keluar dari akun ini? Kamu akan diminta login ulang (data yang sudah tersimpan tidak hilang).');
       if(!ok) return;
+      const tokenToRevoke = sessionToken;
       userId = null;
-      userPassword = null;
+      sessionToken = null;
+      userProfile = null;
+      if(tokenToRevoke && supabaseClient) supabaseClient.rpc('logout_session', { p_session_token: tokenToRevoke }).catch(() => {});
       // Bersihkan semua data in-memory sebelum login gate muncul,
       // biar data user lama tidak terlihat sedetik pun oleh user berikutnya.
       accounts = []; entries = []; goals = []; recurringRules = []; customCategories = { income: [], outcome: [] };
+      currencyRates = Object.assign({}, defaultCurrencyRates);
       budget = { monthly: null, categories: {} };
+      settings = { darkMode: true, budgetWarnPct: 70, privacyMode: false, viewOnlyMode: false };
       clearTemporarySession();
       renderUserBadge();
       isGuest = false;
-      document.body.classList.remove('guest-mode');
+      document.body.classList.remove('guest-mode', 'view-only', 'privacy-mode');
       guestBannerEl.classList.remove('show');
       usernameInputEl.value = '';
       passwordInputEl.value = '';
@@ -3300,6 +3872,67 @@
       usernameInputEl.focus();
     }
   });
+  closeProfileModalBtn.addEventListener('click', () => { closeModal(profileModalOverlayEl); });
+  profileAvatarEl.addEventListener('click', () => profileAvatarInputEl.click());
+  removeProfileAvatarBtn.addEventListener('click', () => { profileAvatarData = ''; profileAvatarEl.style.backgroundImage = ''; profileAvatarEl.classList.remove('has-photo'); removeProfileAvatarBtn.hidden = true; });
+  profileAvatarInputEl.addEventListener('change', (e) => {
+    const file = e.target.files[0]; e.target.value = '';
+    if(!file) return;
+    if(file.size > 2 * 1024 * 1024){ setProfileFeedback('Foto maksimal 2 MB sebelum dikompresi.', 'outcome'); return; }
+    const reader = new FileReader();
+    reader.onload = () => { const image = new Image(); image.onload = () => { const canvas = document.createElement('canvas'); canvas.width = canvas.height = 160; const ctx = canvas.getContext('2d'); const scale = Math.max(160 / image.width, 160 / image.height); const w = image.width * scale, h = image.height * scale; ctx.drawImage(image, (160-w)/2, (160-h)/2, w, h); const data = canvas.toDataURL('image/jpeg', .72); if(data.length > 160000){ setProfileFeedback('Foto terlalu besar setelah dikompresi. Pilih foto lain.', 'outcome'); return; } profileAvatarData = data; profileAvatarEl.style.backgroundImage = 'url("' + data + '")'; profileAvatarEl.classList.add('has-photo'); removeProfileAvatarBtn.hidden = false; setProfileFeedback('Foto siap disimpan bersama Profil.'); }; image.src = reader.result; }; reader.readAsDataURL(file);
+  });
+  profileModalOverlayEl.addEventListener('click', (e) => { if(e.target === profileModalOverlayEl) closeModal(profileModalOverlayEl); });
+  saveProfileBtn.addEventListener('click', async () => {
+    if(isGuest || !sessionToken) return;
+    saveProfileBtn.disabled = true;
+    try{
+      const { data, error } = await supabaseClient.rpc('profile_update', {
+        p_session_token: sessionToken,
+        p_display_name: profileDisplayNameEl.value,
+        p_email: profileEmailEl.value,
+        p_phone: profilePhoneEl.value,
+        p_city: profileCityEl.value,
+        p_avatar_data: profileAvatarData
+      });
+      if(error) throw error;
+      userProfile = data || null;
+      setProfileFeedback('Profil berhasil disimpan.');
+    }catch(err){ setProfileFeedback('Profil belum tersimpan. Periksa koneksi atau sesi Anda.', 'outcome'); }
+    finally{ saveProfileBtn.disabled = false; }
+  });
+  changeUsernameBtn.addEventListener('click', async () => {
+    const nextUsername = sanitizeUsername(newUsernameInputEl.value);
+    if(!nextUsername || !usernameCurrentPasswordEl.value){ setProfileFeedback('Isi username baru dan password saat ini.', 'outcome'); return; }
+    changeUsernameBtn.disabled = true;
+    try{
+      const { data, error } = await supabaseClient.rpc('profile_change_username', { p_session_token: sessionToken, p_current_password: usernameCurrentPasswordEl.value, p_new_username: nextUsername });
+      if(error) throw error;
+      if(data?.status !== 'ok') throw new Error(data?.status || 'USERNAME_FAILED');
+      userId = data.username;
+      usernameCurrentPasswordEl.value = ''; newUsernameInputEl.value = '';
+      refreshTemporarySession(); renderUserBadge();
+      setProfileFeedback('Username berhasil diubah menjadi @' + userId + '.');
+    }catch(err){ setProfileFeedback('Username belum diubah. Pastikan password benar dan username belum dipakai.', 'outcome'); }
+    finally{ changeUsernameBtn.disabled = false; }
+  });
+  changePasswordBtn.addEventListener('click', async () => {
+    if(!passwordCurrentInputEl.value || !passwordNewInputEl.value){ setProfileFeedback('Isi password saat ini dan password baru.', 'outcome'); return; }
+    changePasswordBtn.disabled = true;
+    try{
+      const { data, error } = await supabaseClient.rpc('profile_change_password', { p_session_token: sessionToken, p_current_password: passwordCurrentInputEl.value, p_new_password: passwordNewInputEl.value });
+      if(error) throw error;
+      if(data?.status !== 'ok') throw new Error(data?.status || 'PASSWORD_FAILED');
+      passwordCurrentInputEl.value = ''; passwordNewInputEl.value = '';
+      setProfileFeedback('Password berhasil diubah. Sesi lain pada akun ini sudah dikeluarkan.');
+    }catch(err){ setProfileFeedback('Password belum diubah. Pastikan password saat ini benar dan password baru minimal 4 karakter.', 'outcome'); }
+    finally{ changePasswordBtn.disabled = false; }
+  });
+  let lastSessionTouchAt = 0;
+  ['pointerdown', 'keydown', 'touchstart'].forEach(eventName => document.addEventListener(eventName, () => {
+    refreshTemporarySession();
+    if(Date.now() - lastSessionTouchAt > 60000){ lastSessionTouchAt = Date.now(); touchSession(); }
+  }, { passive: true }));
   document.addEventListener('click', (e) => {
     if(!menuDropdownEl.contains(e.target) && e.target !== toggleMenuBtn){
       menuDropdownEl.classList.remove('open');
@@ -3337,6 +3970,7 @@
   closeCategoriesModalBtn.addEventListener('click', () => { closeModal(categoriesModalOverlayEl); });
   categoriesModalOverlayEl.addEventListener('click', (e) => { if(e.target === categoriesModalOverlayEl) closeModal(categoriesModalOverlayEl); });
   addCategoryBtn.addEventListener('click', async () => {
+    if(blockIfViewOnly()) return;
     const name = newCategoryNameEl.value.trim().replace(/\s+/g, ' ').slice(0, 40);
     const type = newCategoryTypeEl.value;
     if(!name){ setFeedback('Isi nama kategori terlebih dahulu.', 'hero-feedback outcome'); newCategoryNameEl.focus(); return; }
@@ -3354,6 +3988,7 @@
   customCategoriesListEl.addEventListener('click', async (e) => {
     const btn = e.target.closest('[data-category-type]');
     if(!btn) return;
+    if(blockIfViewOnly()) return;
     const type = btn.dataset.categoryType;
     const name = decodeURIComponent(btn.dataset.categoryName || '');
     const index = (customCategories[type] || []).indexOf(name);
@@ -3366,12 +4001,36 @@
     setFeedback('Kategori "' + name + '" dihapus. Transaksi lama tidak diubah.', 'hero-feedback payment');
   });
   closeSplitModalBtn.addEventListener('click', () => { closeModal(splitModalOverlayEl); });
+  closeCurrencyModalBtn.addEventListener('click', () => { closeModal(currencyModalOverlayEl); });
+  currencyAmountInputEl.addEventListener('input', computeCurrencyConversion);
+  currencyFromSelectEl.addEventListener('change', computeCurrencyConversion);
+  currencyToSelectEl.addEventListener('change', computeCurrencyConversion);
+  saveCurrencyRatesBtn.addEventListener('click', async () => {
+    if(blockIfViewOnly()) return;
+    currencyRatesListEl.querySelectorAll('input[data-code]').forEach(inp => {
+      const val = parseFloat(inp.value);
+      if(Number.isFinite(val) && val > 0) currencyRates[inp.dataset.code] = val;
+    });
+    const saved = await saveCurrencyRates();
+    if(!saved) return;
+    computeCurrencyConversion();
+    setFeedback('Kurs berhasil disimpan.', 'hero-feedback payment');
+  });
   splitModalOverlayEl.addEventListener('click', (e) => { if(e.target === splitModalOverlayEl) closeModal(splitModalOverlayEl); });
   closeRecurringModalBtn.addEventListener('click', () => { closeModal(recurringModalOverlayEl); });
   recurringModalOverlayEl.addEventListener('click', (e) => { if(e.target === recurringModalOverlayEl) closeModal(recurringModalOverlayEl); });
 
   exportDataBtn.addEventListener('click', exportData);
+  checkConnectionBtn.addEventListener('click', async () => {
+    connectionStatusEl.textContent = 'Memeriksa…';
+    try{
+      await touchSession();
+      if(!sessionToken) throw new Error('Sesi berakhir');
+      connectionStatusEl.textContent = '✓ Database tersambung';
+    }catch(err){ connectionStatusEl.textContent = '✕ Tidak tersambung'; }
+  });
   importDataInputEl.addEventListener('change', (e) => {
+    if(blockIfViewOnly()){ importDataInputEl.value = ''; return; }
     const file = e.target.files[0];
     if(file) importDataFromFile(file);
     importDataInputEl.value = '';
@@ -3380,6 +4039,7 @@
   manageListEl.addEventListener('click', (e) => {
     const btn = e.target.closest('button');
     if(!btn) return;
+    if(blockIfViewOnly()) return;
     if(btn.dataset.action === 'reconcile') reconcileAccount(btn.dataset.id);
     else if(btn.dataset.action === 'edit-limit') editCreditLimit(btn.dataset.id);
     else if(btn.classList.contains('del-btn')) removeAccount(btn.getAttribute('data-id'));
@@ -3387,16 +4047,21 @@
 
   goalsListEl.addEventListener('click', (e) => {
     const btn = e.target.closest('.del-btn');
-    if(btn) removeGoal(btn.getAttribute('data-goalid'));
+    if(!btn) return;
+    if(blockIfViewOnly()) return;
+    removeGoal(btn.getAttribute('data-goalid'));
   });
 
   recurringDueListEl.addEventListener('click', (e) => {
     const btn = e.target.closest('[data-recurring-record]');
-    if(btn) recordRecurringRule(btn.dataset.recurringRecord);
+    if(!btn) return;
+    if(blockIfViewOnly()) return;
+    recordRecurringRule(btn.dataset.recurringRecord);
   });
   recurringRulesListEl.addEventListener('click', async (e) => {
     const btn = e.target.closest('[data-recurring-id]');
     if(!btn) return;
+    if(blockIfViewOnly()) return;
     const rule = recurringRules.find(item => item.id === btn.dataset.recurringId);
     if(!rule || !window.confirm('Hapus pengingat "' + rule.desc + '"?')) return;
     recurringRules = recurringRules.filter(item => item.id !== rule.id);
@@ -3408,6 +4073,7 @@
     newAccCreditLimitEl.style.display = newAccTypeEl.value === 'credit' ? '' : 'none';
   });
   addAccBtn.addEventListener('click', () => {
+    if(blockIfViewOnly()) return;
     const name = newAccNameEl.value.trim();
     if(!name) return;
     const limitVal = parseFloat(newAccCreditLimitEl.value);
@@ -3418,6 +4084,7 @@
   newAccNameEl.addEventListener('keydown', (e) => { if(e.key === 'Enter'){ addAccBtn.click(); } });
 
   addGoalBtn.addEventListener('click', () => {
+    if(blockIfViewOnly()) return;
     const name = newGoalNameEl.value.trim();
     const target = parseFloat(newGoalTargetEl.value);
     if(!name || isNaN(target) || target <= 0) return;
@@ -3441,6 +4108,7 @@
   });
 
   saveBudgetBtn.addEventListener('click', async () => {
+    if(blockIfViewOnly()) return;
     const monthlyVal = parseFloat(monthlyBudgetInputEl.value);
     budget.monthly = (!isNaN(monthlyVal) && monthlyVal > 0) ? monthlyVal : null;
     const catInputs = catBudgetListEl.querySelectorAll('input[data-cat]');
