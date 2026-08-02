@@ -79,8 +79,8 @@
   .user-avatar{ width:20px; height:20px; border-radius:50%; background:var(--stamp); color:var(--paper);
     font-family:'IBM Plex Mono', monospace; font-size:10px; font-weight:700; display:inline-flex;
     align-items:center; justify-content:center; text-transform:uppercase; flex:0 0 auto; }
-  .save-status{ font-size:10.5px; font-family:'IBM Plex Mono', monospace; padding:2px 8px; border-radius:10px; display:none; align-items:center; gap:5px; line-height:1.35; }
-  .save-status.show{ display:inline-flex; }
+  .save-status{ font-size:10.5px; font-family:'IBM Plex Mono', monospace; padding:2px 8px; border-radius:10px; display:inline-flex; align-items:center; gap:5px; line-height:1.35; visibility:hidden; opacity:0; min-width:100px; transition:visibility 0.2s, opacity 0.2s; }
+  .save-status.show{ visibility:visible; opacity:1; }
   .save-status.saving{ background:var(--stamp-bg); color:var(--stamp); }
   .save-status.saved{ background:var(--income-bg); color:var(--income); }
   .save-status.error{ background:var(--outcome-bg); color:var(--outcome); }
@@ -122,6 +122,9 @@
   .hero-input-card input::placeholder{ color:var(--ink-soft); opacity:0.7; }
   .hero-send-btn{ background:var(--ink); color:var(--paper); border:none; border-radius:var(--r-sm); width:40px; height:40px; flex:0 0 auto; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; }
   .hero-send-btn:hover{ background:var(--stamp); }
+  .hero-clear-btn{ background:none; border:none; color:var(--ink-soft); font-size:18px; cursor:pointer; padding:0 6px; flex:0 0 auto; display:flex; align-items:center; justify-content:center; }
+  .hero-clear-btn:hover{ color:var(--outcome); }
+  .hero-clear-btn:disabled{ color:var(--line); cursor:default; }
   .hero-hint{ font-size:11px; color:var(--ink-soft); margin-top:10px; font-style:italic; text-align:center; }
   .hero-feedback{ font-size:11.5px; margin-top:6px; font-family:'IBM Plex Mono', monospace; min-height:14px; text-align:center;
     opacity:0; transition: opacity 0.4s var(--ease); }
@@ -171,7 +174,7 @@
     .top-bar{ padding:14px; align-items:stretch; flex-direction:column; }
     .brand-block{ gap:5px 10px; }
     .top-bar-right{ width:100%; justify-content:space-between; gap:8px; }
-    .top-bar-right .save-status{ flex:1 0 100%; width:100%; min-height:28px; white-space:normal; }
+    .top-bar-right .save-status{ min-width:80px; white-space:normal; }
     .top-bar-right .menu-wrap{ margin-left:auto; }
     .menu-btn{ min-height:40px; padding:8px 14px; }
     .dashboard-grid, .col{ gap:16px; }
@@ -181,10 +184,11 @@
     .filter-bar{ flex-direction:column; gap:8px; }
     .filter-bar > *{ width:100%; max-width:none; min-height:42px; }
     .filter-bar button{ width:100%; }
-    .entry{ grid-template-columns:minmax(0, 1fr) auto; row-gap:6px; }
+    .entry{ grid-template-columns: 24px minmax(0, 1fr) auto; row-gap:6px; }
     .entry .desc{ overflow-wrap:anywhere; }
     .entry .void-btn{ min-height:34px; padding:5px 8px; }
-    .entry .amount{ grid-column:1; }
+    .batch-actions{ flex-direction:column; gap:6px; }
+    .batch-delete-btn{ width:100%; }
     .balance-split{ flex-direction:column; }
     .balance-split-item{ padding:10px 8px; }
     .balance-split-item .bs-value{ font-size:14px; }
@@ -293,7 +297,7 @@
   .empty{ text-align:center; color:var(--ink-soft); font-size:13px; font-style:italic; padding:40px 10px; }
   .empty .empty-icon{ font-size:26px; display:block; margin-bottom:10px; font-style:normal; opacity:0.5; }
   .day-label{ font-size:10.5px; letter-spacing:1.5px; text-transform:uppercase; color:var(--ink-soft); padding:14px 0 6px; }
-  .entry{ display:grid; grid-template-columns: 1fr auto auto; align-items:start; column-gap:10px; padding:9px 6px; margin:0 -6px; border-bottom:1px dotted var(--line); border-radius:6px;
+  .entry{ display:grid; grid-template-columns: auto 1fr auto; align-items:start; column-gap:10px; padding:9px 6px; margin:0 -6px; border-bottom:1px dotted var(--line); border-radius:6px;
     transition: background-color 0.15s var(--ease); }
   .entry:hover{ background:rgba(169,129,44,0.06); }
   .entry .desc{ font-size:14px; font-weight:500; }
@@ -317,6 +321,16 @@
   .entry .amount.transfer{color:var(--stamp);}
   .entry .void-btn{ background:none; border:1px solid var(--line); color:var(--ink-soft); font-family:'IBM Plex Mono', monospace; font-size:10px; border-radius:3px; padding:2px 6px; cursor:pointer; align-self:start; }
   .entry .void-btn:hover{ border-color:var(--outcome); color:var(--outcome); }
+  .batch-actions{ display:flex; gap:8px; margin-bottom:8px; align-items:center; }
+  .select-all-container{ display:flex; align-items:center; gap:6px; }
+  .select-all-container input[type=checkbox]{ width:16px; height:16px; accent-color:var(--stamp); cursor:pointer; }
+  .select-all-container label{ font-size:11px; color:var(--ink-soft); cursor:pointer; }
+  .batch-delete-btn{ background:var(--outcome); color:var(--paper); border:none; border-radius:4px; font-size:10.5px; padding:5px 10px; cursor:pointer; }
+  .batch-delete-btn:hover{ background:var(--ink); }
+  .batch-delete-btn:disabled{ background:var(--line); color:var(--ink-soft); cursor:not-allowed; }
+  .entry-checkbox{ width:16px; height:16px; accent-color:var(--stamp); cursor:pointer; flex:0 0 auto; }
+  .entry.highlight{ background:rgba(169,129,44,0.15); }
+  .account-tag-color{ display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:4px; flex:0 0 auto; }
 
   .summary-row{ display:flex; justify-content:space-between; font-family:'IBM Plex Mono', monospace; font-size:12.5px; padding:4px 0; }
   .summary-row.income span:last-child{color:var(--income);}
@@ -443,16 +457,28 @@
 
   #printReceipt{ display:none; }
   #printMonthlyReport{ display:none; }
+  #printReceipt.active{ display:block; width:100%; max-width:320px; margin:0 auto; padding:20px;
+    font-family:'IBM Plex Mono', monospace; background:#fff; color:#000; box-sizing:border-box;
+    position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:10000; }
+  #printReceipt .pr-title{ text-align:center; font-weight:700; letter-spacing:2px; margin-bottom:4px; }
+  #printReceipt .pr-sub{ text-align:center; font-size:11px; margin-bottom:12px; }
+  #printReceipt .pr-line{ border-top:1px dashed #000; margin:8px 0; }
+  #printReceipt .pr-row{ display:flex; justify-content:space-between; font-size:12px; padding:3px 0; }
+  #printReceipt .pr-total{ font-weight:700; }
   @media print{
-    body *{ visibility:hidden; }
-    #printReceipt.active, #printReceipt.active *{ visibility:visible; }
-    #printReceipt.active{ display:block; position:fixed; top:0; left:0; width:320px; margin:0 auto; padding:20px;
-      font-family:'IBM Plex Mono', monospace; background:#fff; color:#000; }
-    #printReceipt .pr-title{ text-align:center; font-weight:700; letter-spacing:2px; margin-bottom:4px; }
-    #printReceipt .pr-sub{ text-align:center; font-size:11px; margin-bottom:12px; }
-    #printReceipt .pr-line{ border-top:1px dashed #000; margin:8px 0; }
-    #printReceipt .pr-row{ display:flex; justify-content:space-between; font-size:12px; padding:3px 0; }
-    #printReceipt .pr-total{ font-weight:700; }
+    body *{ visibility:hidden !important; }
+    #printReceipt.active, #printReceipt.active *{ visibility:visible !important; }
+    #printReceipt.active{ 
+      position:static !important; 
+      transform:none !important; 
+      top:auto !important; 
+      left:auto !important;
+      background:#fff !important; 
+      color:#000 !important; 
+      page-break-after:avoid; 
+      break-after:avoid; 
+    }
+  }
 
     #printMonthlyReport.active, #printMonthlyReport.active *{ visibility:visible; }
     #printMonthlyReport.active{ display:block; position:fixed; top:0; left:0; width:100%; padding:30px 40px;
@@ -617,21 +643,24 @@
       <span class="byline">by Scalista</span>
     </div>
     <div class="top-bar-right">
-      <span class="date-text" id="todayDate">memuat...</span>
-      <span class="version-badge" id="versionBadge">v1.37</span>
-      <span class="user-badge-wrap" id="userBadgeWrap" hidden>
-        <span class="user-avatar" id="userAvatar"></span>
-        <span class="version-badge" id="userBadge"></span>
-      </span>
-      <span class="save-status" id="saveStatus"></span>
-      <button class="version-link" id="toggleData">cadangan data</button>
-      <a class="version-link" href="https://github.com/everninecoz/scalista-iot/commits/main" target="_blank" rel="noopener noreferrer">riwayat versi &nearr;</a>
-      <button class="version-link" id="toggleDarkMode">&#9789; gelap</button>
-      <button class="version-link" id="togglePrivacyMode" aria-pressed="false" title="Sembunyikan atau tampilkan saldo bersih">&#9689; privasi</button>
-      <button class="version-link" id="toggleViewOnly" aria-pressed="false" title="Kunci sementara supaya data tidak bisa diedit/dihapus">&#9673; hanya lihat</button>
-      <div class="menu-wrap">
-        <button class="menu-btn" id="toggleMenu">Menu &#9662;</button>
-        <div class="menu-dropdown" id="menuDropdown">
+      <div class="top-bar-left-group">
+        <span class="date-text" id="todayDate">memuat...</span>
+        <span class="version-badge" id="versionBadge">v1.37</span>
+        <span class="user-badge-wrap" id="userBadgeWrap" hidden>
+          <span class="user-avatar" id="userAvatar"></span>
+          <span class="version-badge" id="userBadge"></span>
+        </span>
+        <span class="save-status" id="saveStatus"></span>
+      </div>
+      <div class="top-bar-right-group">
+        <button class="version-link" id="toggleData">cadangan data</button>
+        <a class="version-link" href="https://github.com/everninecoz/scalista-iot/commits/main" target="_blank" rel="noopener noreferrer">riwayat versi &nearr;</a>
+        <button class="version-link" id="toggleDarkMode">&#9789; gelap</button>
+        <button class="version-link" id="togglePrivacyMode" aria-pressed="false" title="Sembunyikan atau tampilkan saldo bersih">&#9689; privasi</button>
+        <button class="version-link" id="toggleViewOnly" aria-pressed="false" title="Kunci sementara supaya data tidak bisa diedit/dihapus">&#9673; hanya lihat</button>
+        <div class="menu-wrap">
+          <button class="menu-btn" id="toggleMenu">Menu &#9662;</button>
+          <div class="menu-dropdown" id="menuDropdown">
           <button data-open="accounts">Kelola Sumber Dana</button>
           <button data-open="categories">Kelola Kategori</button>
           <button data-open="goals">Rencana Dana</button>
@@ -746,7 +775,7 @@
         <div class="card-inner-top">
           <div class="section-label"><span>Riwayat Transaksi</span></div>
           <div class="filter-bar">
-            <input type="text" id="searchInput" placeholder="Cari transaksi...">
+            <input type="text" id="searchInput" placeholder="Cari transaksi... (type: cat: acc: > <)">
             <input type="month" id="monthFilter">
             <select id="accountFilter"><option value="">Semua Sumber Dana</option></select>
             <select id="categoryFilter"><option value="">Semua Kategori</option></select>
@@ -764,8 +793,9 @@
           <div class="hero-input-card">
             <input id="quickInput" type="text" placeholder="Ketik transaksi... contoh: beli kopi 25000">
             <button class="hero-send-btn" id="sendBtn" title="Kirim">&#8594;</button>
+            <button class="hero-clear-btn" id="clearInputBtn" title="Hapus">&#10005;</button>
           </div>
-          <div class="hero-hint">Enter untuk simpan. Coba: "kemarin makan 30rb", "transfer 100rb dari debit ke tunai", "gaji 5 juta tanggal 25"</div>
+          <div class="hero-hint">Enter untuk simpan. Coba: "kemarin makan 30rb", "transfer 100rb dari debit ke tunai", "gaji 5 juta tanggal 25". Shortcut: Ctrl+K (cari), Ctrl+F (input), Ctrl+D (gelap/terang)</div>
           <div class="hero-feedback" id="feedback" role="status" aria-live="polite" aria-atomic="true"></div>
           <div class="hero-clarify" id="clarify">
             <div class="cq" id="clarifyQuestion"></div>
@@ -1026,9 +1056,11 @@
   let recurringRules = [];
   let customCategories = { income: [], outcome: [] };
   let budget = { monthly: null, categories: {} };
-  let settings = { darkMode: true, budgetWarnPct: 70, privacyMode: false, viewOnlyMode: false };
+  let settings = { darkMode: true, budgetWarnPct: 70, privacyMode: false, viewOnlyMode: false, accountColors: {} };
   let pending = null;
   let splitParticipants = [];
+  let selectedEntries = new Set();
+  let lastAddedEntryId = null;
 
   const CURRENCY_RATES_KEY = 'currencyRates';
   const defaultCurrencyRates = {
@@ -1060,6 +1092,7 @@
   const emptyEl = document.getElementById('emptyState');
   const inputEl = document.getElementById('quickInput');
   const sendBtn = document.getElementById('sendBtn');
+  const clearInputBtn = document.getElementById('clearInputBtn');
   const feedbackEl = document.getElementById('feedback');
   const balanceStampEl = document.getElementById('balanceStamp');
   const mainBalanceValueEl = document.getElementById('mainBalanceValue');
@@ -1107,6 +1140,7 @@
   const checkConnectionBtn = document.getElementById('checkConnectionBtn');
   const connectionStatusEl = document.getElementById('connectionStatus');
   const backupReminderEl = document.getElementById('backupReminder');
+  let selectAllEntriesEl, batchDeleteBtnEl;
   const clarifyEl = document.getElementById('clarify');
   const clarifyQuestionEl = document.getElementById('clarifyQuestion');
   const clarifyOptionsEl = document.getElementById('clarifyOptions');
@@ -1563,6 +1597,33 @@
 
   const incomeCategories = ['Gaji','Penjualan','Bonus','Freelance','Pemasukan Lain'];
   const outcomeCategories = ['Makanan & Minuman','Transportasi','Belanja','Tagihan','Hiburan','Kesehatan','Lainnya'];
+
+  const categoryEmojis = {
+    'Gaji': '&#127975;',
+    'Penjualan': '&#128176;',
+    'Bonus': '&#127881;',
+    'Freelance': '&#128187;',
+    'Pemasukan Lain': '&#128178;',
+    'Makanan & Minuman': '&#127869;',
+    'Transportasi': '&#128662;',
+    'Belanja': '&#128092;',
+    'Tagihan': '&#128172;',
+    'Hiburan': '&#127915;',
+    'Kesehatan': '&#128158;',
+    'Lainnya': '&#128196;',
+    'Pembayaran': '&#128172;',
+    'Transfer': '&#128200;',
+    'Tabungan': '&#128179;',
+    'Cicilan': '&#128172;'
+  };
+
+  function getCategoryEmoji(categoryName){
+    if(!categoryName) return '';
+    for(const [cat, emoji] of Object.entries(categoryEmojis)){
+      if(categoryName.includes(cat)) return emoji + ' ';
+    }
+    return '';
+  }
 
   function normalizeCustomCategories(value){
     const normalized = { income: [], outcome: [] };
@@ -2410,6 +2471,27 @@
       if(accId && e.accountId !== accId && e.toAccountId !== accId) return false;
       if(cat && e.category !== cat) return false;
       if(smartSearch.start && (e.ts < smartSearch.start || e.ts >= smartSearch.end)) return false;
+      
+      // Advanced search filters
+      const filters = smartSearch.filters || {};
+      
+      // Type filter
+      if(filters.type && e.type !== filters.type) return false;
+      
+      // Category filter
+      if(filters.category && !e.category.toLowerCase().includes(filters.category.toLowerCase())) return false;
+      
+      // Account filter
+      if(filters.account && filters.account.toLowerCase()){
+        const accountName = ((accounts.find(a => a.id === e.accountId) || {}).name || '').toLowerCase();
+        const toAccountName = e.toAccountId ? ((accounts.find(a => a.id === e.toAccountId) || {}).name || '').toLowerCase() : '';
+        if(!accountName.includes(filters.account.toLowerCase()) && !toAccountName.includes(filters.account.toLowerCase())) return false;
+      }
+      
+      // Amount range filters
+      if(filters.minAmount !== null && e.amount < filters.minAmount) return false;
+      if(filters.maxAmount !== null && e.amount > filters.maxAmount) return false;
+      
       const accountName = ((accounts.find(a => a.id === e.accountId) || {}).name || '').toLowerCase();
       if(smartSearch.text && !e.desc.toLowerCase().includes(smartSearch.text) && !e.category.toLowerCase().includes(smartSearch.text) && !accountName.includes(smartSearch.text)) return false;
       return true;
@@ -2420,11 +2502,59 @@
     let text = raw.trim().toLowerCase();
     let start = null, end = null;
     const now = new Date();
+    
+    // Date keywords
     if(text.includes('bulan lalu')){ start = new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime(); end = new Date(now.getFullYear(), now.getMonth(), 1).getTime(); text = text.replace('bulan lalu', ''); }
     else if(text.includes('bulan ini')){ start = new Date(now.getFullYear(), now.getMonth(), 1).getTime(); end = new Date(now.getFullYear(), now.getMonth() + 1, 1).getTime(); text = text.replace('bulan ini', ''); }
     else if(text.includes('hari ini')){ start = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime(); end = start + 86400000; text = text.replace('hari ini', ''); }
     else if(text.includes('minggu ini')){ const day = now.getDay(); start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - day).getTime(); end = start + 7 * 86400000; text = text.replace('minggu ini', ''); }
-    return { text:text.trim(), start, end };
+    
+    // Extract advanced search operators
+    const filters = { text: '', type: null, category: null, account: null, minAmount: null, maxAmount: null };
+    
+    // Extract type: operator
+    const typeMatch = text.match(/\btype:\s*(\w+)/);
+    if(typeMatch){ filters.type = typeMatch[1]; text = text.replace(typeMatch[0], ''); }
+    
+    // Extract cat: or category: operator
+    const catMatch = text.match(/\b(cat|category):\s*([^\s]+)/);
+    if(catMatch){ filters.category = catMatch[2]; text = text.replace(catMatch[0], ''); }
+    
+    // Extract acc: or account: operator
+    const accMatch = text.match(/\b(acc|account):\s*([^\s]+)/);
+    if(accMatch){ filters.account = accMatch[2]; text = text.replace(accMatch[0], ''); }
+    
+    // Extract amount range operators
+    const gtMatch = text.match(/\b>\s*(\d+[.,]?\d*)/);
+    if(gtMatch){ filters.minAmount = parseNumber(gtMatch[1]); text = text.replace(gtMatch[0], ''); }
+    
+    const ltMatch = text.match(/\b<\s*(\d+[.,]?\d*)/);
+    if(ltMatch){ filters.maxAmount = parseNumber(ltMatch[1]); text = text.replace(ltMatch[0], ''); }
+    
+    filters.text = text.trim();
+    
+    return { text: filters.text, start, end, filters };
+  }
+  
+  function parseNumber(str){
+    const cleaned = String(str).replace(/[.,]/g, '');
+    return parseFloat(cleaned) || null;
+  }
+  
+  function getAccountColor(accountId){
+    if(!settings.accountColors) settings.accountColors = {};
+    if(!settings.accountColors[accountId]){
+      const colors = ['#A9812C', '#2E6B52', '#7A2E2E', '#3D5A80', '#6B7268', '#B8B09C', '#E3EAF1', '#F1E9D3', '#8FB0D9', '#D9B968'];
+      const index = Object.keys(settings.accountColors).length % colors.length;
+      settings.accountColors[accountId] = colors[index];
+      saveSettings();
+    }
+    return settings.accountColors[accountId];
+  }
+  
+  function getAccountColorStyle(accountId){
+    const color = getAccountColor(accountId);
+    return `background-color: ${color};`;
   }
 
   function getMonthVisualSummary(){
@@ -2709,6 +2839,19 @@
     } else {
       emptyEl.style.display = 'none';
       listEl.innerHTML = '';
+      
+      // Add batch actions
+      const batchActions = document.createElement('div');
+      batchActions.className = 'batch-actions';
+      batchActions.innerHTML = `
+        <div class="select-all-container">
+          <input type="checkbox" id="selectAllEntries" ${selectedEntries.size > 0 ? '' : 'checked'}>
+          <label for="selectAllEntries">Pilih Semua</label>
+        </div>
+        <button class="batch-delete-btn" id="batchDeleteBtn" disabled>Hapus Terpilih (0)</button>
+      `;
+      listEl.appendChild(batchActions);
+      
       if(accFilterActive){
         const accName = (accounts.find(a => a.id === accFilterActive) || {}).name || '';
         const note = document.createElement('div');
@@ -2729,7 +2872,7 @@
           lastDay = dayKey;
         }
         const row = document.createElement('div');
-        row.className = 'entry';
+        row.className = 'entry' + (lastAddedEntryId === e.id ? ' highlight' : '');
         const time = d.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
         const acc = accounts.find(a => a.id === e.accountId);
         const accName = acc ? acc.name : '?';
@@ -2742,21 +2885,25 @@
         const sign = (e.type === 'outcome' || e.type === 'saving') ? '-' : ((e.type === 'payment' || e.type === 'transfer') ? '\u2212' : '+');
         const mutationHtml = runningMap ? `<div class="meta" style="margin-top:2px;">Saldo: ${formatRupiah(runningMap[e.id])}</div>` : '';
         const recurringTagHtml = e.recurringRuleId ? '<span class="tag recurring-tag" title="Dicatat dari Transaksi Berulang">&#10227; Berulang</span>' : '';
+        const accountColorStyle = acc ? getAccountColorStyle(acc.id) : '';
         row.innerHTML = `
+          <input type="checkbox" class="entry-checkbox" data-id="${e.id}" ${selectedEntries.has(e.id) ? 'checked' : ''}>
           <div>
             <div class="desc">${escapeHtml(e.desc)}</div>
             <div class="meta">${time}</div>
             <div class="tags">
-              <span class="tag ${e.type}">${escapeHtml(e.category)}</span>
-              <span class="tag acc">${escapeHtml(accLabel)}</span>
+              <span class="tag ${e.type}">${getCategoryEmoji(e.category)}${escapeHtml(e.category)}</span>
+              <span class="tag acc"><span class="account-tag-color" style="${accountColorStyle}"></span>${escapeHtml(accLabel)}</span>
               ${recurringTagHtml}
             </div>
             ${mutationHtml}
           </div>
-          <div class="amount ${e.type}">${sign}${formatRupiah(e.amount)}</div>
-          <div style="display:flex; flex-direction:column; gap:4px;">
-            <button class="void-btn" data-id="${e.id}" data-action="edit" title="Edit transaksi">EDIT</button>
-            <button class="void-btn" data-id="${e.id}" data-action="delete" title="Hapus transaksi">HAPUS</button>
+          <div class="entry-actions" style="display:flex; align-items:center; gap:10px; justify-content:flex-end;">
+            <span class="amount ${e.type}">${sign}${formatRupiah(e.amount)}</span>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              <button class="void-btn" data-id="${e.id}" data-action="edit" title="Edit transaksi">EDIT</button>
+              <button class="void-btn" data-id="${e.id}" data-action="delete" title="Hapus transaksi">HAPUS</button>
+            </div>
           </div>
         `;
         listEl.appendChild(row);
@@ -3022,6 +3169,72 @@
     clearTimeout(feedbackTimer);
     feedbackTimer = setTimeout(() => { feedbackEl.classList.remove('show'); }, 4500);
   }
+  
+  function updateBatchDeleteButton(){
+    if(!batchDeleteBtnEl) batchDeleteBtnEl = document.getElementById('batchDeleteBtn');
+    if(!batchDeleteBtnEl) return;
+    const count = selectedEntries.size;
+    batchDeleteBtnEl.textContent = `Hapus Terpilih (${count})`;
+    batchDeleteBtnEl.disabled = count === 0;
+  }
+  
+  function toggleSelectAll(checked = true){
+    if(!selectAllEntriesEl) selectAllEntriesEl = document.getElementById('selectAllEntries');
+    if(!selectAllEntriesEl) return;
+    
+    const checkboxes = document.querySelectorAll('.entry-checkbox');
+    checkboxes.forEach(cb => {
+      cb.checked = checked;
+      const entryId = cb.dataset.id;
+      if(checked && !selectedEntries.has(entryId)){
+        selectedEntries.add(entryId);
+      } else if(!checked && selectedEntries.has(entryId)){
+        selectedEntries.delete(entryId);
+      }
+    });
+    updateBatchDeleteButton();
+  }
+  
+  function toggleEntrySelection(entryId, checked){
+    if(checked) selectedEntries.add(entryId);
+    else selectedEntries.delete(entryId);
+    updateBatchDeleteButton();
+  }
+  
+  async function batchDeleteSelected(){
+    if(selectedEntries.size === 0) return;
+    
+    const count = selectedEntries.size;
+    const confirmMsg = `Hapus ${count} transaksi terpilih? Tindakan ini tidak bisa dibatalkan.`;
+    if(!window.confirm(confirmMsg)) return;
+    
+    entries = entries.filter(e => !selectedEntries.has(e.id));
+    const saved = await saveEntries();
+    
+    if(saved) {
+      selectedEntries.clear();
+      render();
+      updateBatchDeleteButton();
+      setFeedback(`${count} transaksi berhasil dihapus.`, 'hero-feedback payment');
+    } else {
+      selectedEntries.clear();
+      render();
+      updateBatchDeleteButton();
+      setFeedback('Gagal menghapus transaksi.', 'hero-feedback outcome');
+    }
+  }
+  
+  function focusSearchInput(){
+    if(searchInputEl) searchInputEl.focus();
+  }
+  
+  function focusMainInput(){
+    if(inputEl) inputEl.focus();
+  }
+  
+  function toggleDarkModeShortcut(){
+    if(toggleDarkModeBtn) toggleDarkModeBtn.click();
+  }
 
   async function finalizeEntry(parsed){
     const entry = {
@@ -3039,26 +3252,48 @@
     if(parsed.recurringDue) entry.recurringDue = parsed.recurringDue;
     entries.push(entry);
     const saved = await saveEntries();
+    lastAddedEntryId = entry.id;
+    selectedEntries.clear();
     render();
     if(!saved){
       closeClarify();
+      lastAddedEntryId = null;
       return false;
     }
+    
+    // Auto-scroll to the new entry
+    setTimeout(() => {
+      const entryEl = document.querySelector(`.entry.highlight`);
+      if(entryEl) entryEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      lastAddedEntryId = null;
+    }, 100);
     const accName = (accounts.find(a => a.id === parsed.accountId) || {}).name || '';
+    
+    // Get monthly summary
+    const now = new Date();
+    const monthEntries = entries.filter(e => {
+      const d = new Date(e.ts);
+      return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+    });
+    const monthIncome = monthEntries.filter(e => e.type === 'income').reduce((s,e) => s + e.amount, 0);
+    const monthOutcome = monthEntries.filter(e => e.type === 'outcome').reduce((s,e) => s + e.amount, 0);
+    const monthNet = monthIncome - monthOutcome;
+    const monthSummary = ` | Bulan ini: +${formatRupiah(monthIncome)} -${formatRupiah(monthOutcome)} = ${formatRupiah(monthNet)}`;
+    
     if(entry.type === 'payment'){
       const toName = (accounts.find(a => a.id === parsed.toAccountId) || {}).name || '';
-      setFeedback('Tercatat: bayar ' + formatRupiah(entry.amount) + ' dari ' + accName + ' ke ' + toName, 'hero-feedback payment');
+      setFeedback('Tercatat: bayar ' + formatRupiah(entry.amount) + ' dari ' + accName + ' ke ' + toName + monthSummary, 'hero-feedback payment');
     } else if(entry.type === 'transfer'){
       const toName = (accounts.find(a => a.id === parsed.toAccountId) || {}).name || '';
-      setFeedback('Tercatat: transfer ' + formatRupiah(entry.amount) + ' dari ' + accName + ' ke ' + toName, 'hero-feedback payment');
+      setFeedback('Tercatat: transfer ' + formatRupiah(entry.amount) + ' dari ' + accName + ' ke ' + toName + monthSummary, 'hero-feedback payment');
     } else if(entry.type === 'saving'){
       const goalName = (goals.find(g => g.id === parsed.goalId) || {}).name || '';
-      setFeedback('Tercatat: nabung ' + formatRupiah(entry.amount) + ' dari ' + accName + ' ke ' + goalName, 'hero-feedback saving');
+      setFeedback('Tercatat: nabung ' + formatRupiah(entry.amount) + ' dari ' + accName + ' ke ' + goalName + monthSummary, 'hero-feedback saving');
     } else if(entry.type === 'withdraw_goal'){
       const goalName = (goals.find(g => g.id === parsed.goalId) || {}).name || '';
-      setFeedback('Tercatat: ambil ' + formatRupiah(entry.amount) + ' dari ' + goalName + ' ke ' + accName, 'hero-feedback saving');
+      setFeedback('Tercatat: ambil ' + formatRupiah(entry.amount) + ' dari ' + goalName + ' ke ' + accName + monthSummary, 'hero-feedback saving');
     } else {
-      setFeedback((entry.type === 'income' ? 'Tercatat: +' : 'Tercatat: -') + formatRupiah(entry.amount) + ' \u00b7 ' + entry.category + (accName ? (' \u00b7 ' + accName) : ''), 'hero-feedback ' + entry.type);
+      setFeedback((entry.type === 'income' ? 'Tercatat: +' : 'Tercatat: -') + formatRupiah(entry.amount) + ' \u00b7 ' + entry.category + (accName ? (' \u00b7 ' + accName) : '') + monthSummary, 'hero-feedback ' + entry.type);
       const acc = accounts.find(a => a.id === parsed.accountId);
       if(acc && acc.type === 'credit' && entry.type === 'outcome' && Number.isFinite(acc.creditLimit) && acc.creditLimit > 0){
         const debt = computeBalances()[acc.id] || 0;
@@ -3229,6 +3464,7 @@
     const ok = window.confirm('Hapus ' + label + '? Tindakan ini tidak bisa dibatalkan.');
     if(!ok) return;
     entries = entries.filter(e => e.id !== id);
+    selectedEntries.clear();
     saveEntries();
     render();
   }
@@ -3286,6 +3522,7 @@
       acc.creditLimit = creditLimit;
     }
     accounts.push(acc);
+    selectedEntries.clear();
     saveAccounts();
     render();
   }
@@ -3550,9 +3787,16 @@
   discountTypeInputEl.addEventListener('change', renderSplitBreakdown);
 
   printSplitBtn.addEventListener('click', () => {
-    printReceiptEl.classList.add('active');
+    renderSplitBreakdown();
+    const r = computeSplit();
+    if(r.grandTotal <= 0 || splitParticipants.length === 0){
+      setFeedback('Tambahkan peserta, nama, dan item dengan nominal terlebih dahulu sebelum mencetak struk.', 'hero-feedback outcome');
+      return;
+    }
     printMonthlyReportEl.classList.remove('active');
-    window.print();
+    printReceiptEl.classList.add('active');
+    setTimeout(() => { window.print(); }, 200);
+    setTimeout(() => { printReceiptEl.classList.remove('active'); }, 500);
   });
   if(exportMonthlyReportBtn){
     exportMonthlyReportBtn.addEventListener('click', exportMonthlyReportAsPdf);
@@ -3763,19 +4007,51 @@
       if(val.trim()){ addEntry(val); inputEl.value = ''; }
     }
   });
+  inputEl.addEventListener('input', () => {
+    if(clearInputBtn) clearInputBtn.disabled = !inputEl.value.trim();
+  });
   sendBtn.addEventListener('click', () => {
     const val = inputEl.value;
     if(val.trim()){ addEntry(val); inputEl.value = ''; }
   });
+  if(clearInputBtn){
+    clearInputBtn.addEventListener('click', () => {
+      inputEl.value = '';
+      clearInputBtn.disabled = true;
+      inputEl.focus();
+    });
+  }
 
   listEl.addEventListener('click', (e) => {
     const btn = e.target.closest('.void-btn');
-    if(!btn) return;
-    if(blockIfViewOnly()) return;
-    const id = btn.getAttribute('data-id');
-    const action = btn.getAttribute('data-action');
-    if(action === 'edit') openEditEntry(id);
-    else removeEntry(id);
+    const checkbox = e.target.closest('.entry-checkbox');
+    const selectAll = e.target.closest('#selectAllEntries');
+    const batchDelete = e.target.closest('#batchDeleteBtn');
+    
+    if(checkbox && !blockIfViewOnly()){
+      const entryId = checkbox.dataset.id;
+      toggleEntrySelection(entryId, checkbox.checked);
+      e.stopPropagation();
+      return;
+    }
+    
+    if(selectAll && !blockIfViewOnly()){
+      toggleSelectAll(selectAll.checked);
+      return;
+    }
+    
+    if(batchDelete && !blockIfViewOnly()){
+      batchDeleteSelected();
+      return;
+    }
+    
+    if(btn) {
+      if(blockIfViewOnly()) return;
+      const id = btn.getAttribute('data-id');
+      const action = btn.getAttribute('data-action');
+      if(action === 'edit') openEditEntry(id);
+      else removeEntry(id);
+    }
   });
 
   closeEditEntryModalBtn.addEventListener('click', () => { closeModal(editEntryModalOverlayEl); });
@@ -3785,10 +4061,10 @@
     el.addEventListener('keydown', (e) => { if(e.key === 'Enter') saveEditedEntry(); });
   });
 
-  searchInputEl.addEventListener('input', render);
-  monthFilterEl.addEventListener('change', render);
-  accountFilterEl.addEventListener('change', render);
-  categoryFilterEl.addEventListener('change', render);
+  searchInputEl.addEventListener('input', () => { selectedEntries.clear(); render(); });
+  monthFilterEl.addEventListener('change', () => { selectedEntries.clear(); render(); });
+  accountFilterEl.addEventListener('change', () => { selectedEntries.clear(); render(); });
+  categoryFilterEl.addEventListener('change', () => { selectedEntries.clear(); render(); });
   resetFilterBtn.addEventListener('click', () => {
     searchInputEl.value = '';
     monthFilterEl.value = '';
@@ -3962,6 +4238,24 @@
       } else if(!e.shiftKey && document.activeElement === last){
         e.preventDefault();
         first.focus();
+      }
+    }
+    
+    // Keyboard shortcuts (Ctrl+K, Ctrl+F, Ctrl+D)
+    if(e.ctrlKey || e.metaKey){
+      switch(e.key.toLowerCase()){
+        case 'k':
+          e.preventDefault();
+          focusSearchInput();
+          break;
+        case 'f':
+          e.preventDefault();
+          focusMainInput();
+          break;
+        case 'd':
+          e.preventDefault();
+          toggleDarkModeShortcut();
+          break;
       }
     }
   });
@@ -4140,6 +4434,8 @@
   ['pointerdown', 'keydown', 'touchstart'].forEach(eventName => document.addEventListener(eventName, refreshTemporarySession, { passive:true }));
   restoreTemporarySession();
   if(!userId) usernameInputEl.focus();
+  else inputEl.focus();
+  if(clearInputBtn) clearInputBtn.disabled = !inputEl.value.trim();
 })();
 </script>
 
